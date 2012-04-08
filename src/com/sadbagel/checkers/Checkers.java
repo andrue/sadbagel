@@ -12,8 +12,6 @@ import org.newdawn.slick.AppGameContainer;
 
 public class Checkers extends BasicGame {
 	
-	//Development Test
-	
 	boolean backgroundSwap = false;
 	Image background[] = new Image[2];
 	Image bg1 = null;
