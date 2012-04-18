@@ -10,6 +10,12 @@ import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.AppGameContainer;
 
+/**
+ * I accidentally test.
+ * @author wnukry1
+ *
+ */
+
 public class Checkers extends BasicGame {
 	
 	boolean backgroundSwap = false;
