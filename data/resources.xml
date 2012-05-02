@@ -21,6 +21,7 @@
 	<image key="title" file="images/title.png"/>
 	<image key="titleBG" file="images/bg1.png"/>
 	<image key="game" file="images/bg2.jpg"/>
+	<image key="bg3" file="images/bg3.jpg"/>
 	<image key="menu" file="images/bk.png"/>
 	
 	<image key="banner" file="images/blackbanner.png"/>

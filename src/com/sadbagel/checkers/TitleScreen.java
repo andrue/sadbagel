@@ -70,7 +70,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//Sets up Title Menu Areas, Variables, images, etc.
-		background = new Image("data/images/bg1.png");
+		background = new Image("data/images/bg3.jpg");
 		title = ResourceManager.getImage("title");
 		banner = ResourceManager.getImage("banner");
 		
@@ -87,13 +87,19 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	int bannerY = 0;
 	float bannerAlpha = 0.0f;
 	
+	float bgX = -800.0f;
+	float bgY = -200.0f;
+	
 	@Override
 	public void render(GameContainer container, StateBasedGame arg1, Graphics g)
 			throws SlickException {
 		//Renders the current screen
 		
 		//Render Background
-		background.draw(-100,-200);
+		background.draw(bgX, bgY);
+		bgX += .01f;
+		
+		//Update background draw
 		
 		//Render Title
 		if(animateTitle == 0){
@@ -110,11 +116,11 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		else if(animateTitle == 1){
 			banner.draw(0, 90, new Color(1,1,1,0.5f));
 			if(bannerAlpha < 1.0f){
-				title.draw(50, 100, bannerAlpha);
-				bannerAlpha += 0.05f;
+				title.draw(50, 100, new Color(1,1,1,bannerAlpha));
+				bannerAlpha += 0.025f;
 			}
 			else{
-				title.draw(50, 100, bannerAlpha);
+				title.draw(50, 100, new Color(1,1,1,bannerAlpha));
 				animateTitle++;
 			}
 		}
