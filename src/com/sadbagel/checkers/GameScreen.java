@@ -85,7 +85,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 							boardY+32*j,
 							32,
 							32);
-				board[i][j].addListener(new SquareListener(i,j));
+				board[i][j].addListener(new SquareListener(i,j,this));
 			}
 		}
 		
@@ -123,9 +123,21 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		return stateID;
 	}
 	
-
+	/**
+	 * squareClicked
+	 * @param x - Location of square on board
+	 * @param y - Location of square on board
+	 * 
+	 * Handles the event when board square (X,Y) is clicked.
+	 * In the future, it might communicate with the backend.
+	 *   Convoluted process to reach this method enables the board to be rendered differently while leaving this method the same.
+	 */
+	public void squareClicked(int x, int y) {
+		System.out.println("On the board, "+x+", "+y+" has been clicked.");
+		board[x][y].setNormalImage(redPiece);//Debug behavior, arbitrary
+	}
 	
-	@Override
+	//TODO: Evaluate whether this is still necessary
 	public void componentActivated(AbstractComponent arg0) {
 		//Handle the clicking of pieces, and of the menu
 		System.out.println("Lol, GameScreen got activated");
@@ -138,10 +150,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	{
 		private int x;
 		private int y;
-		public SquareListener(int x, int y)
+		private GameScreen game;//Yeah, it's kinda redundant. Feel free to come up with a better solution; this is only to call GameScreen's componentActivated anyways.
+		public SquareListener(int x, int y, GameScreen game)
 		{
 			this.x = x;
 			this.y = y;
+			this.game = game;
 		}
 
 		@Override
@@ -149,6 +163,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			// TODO Auto-generated method stub
 			System.out.println("SquareListener at board x"+x+" y"+y+" activated.");
 			//Gamescreen.activate;//Notify GameScreen that this square has been clicked, and let it handle that.
+			game.squareClicked(x,y);
 		}
 		
 	}
