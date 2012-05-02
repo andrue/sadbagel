@@ -17,6 +17,7 @@ public class Checkers extends StateBasedGame {
         this.addState(new TitleScreen(TITLESCREENSTATE));
         this.addState(new GameScreen(GAMESCREENSTATE));
         this.enterState(TITLESCREENSTATE);
+    	Globals.GAME = this;//I'm going to hell for this.
     }
     
     @Override

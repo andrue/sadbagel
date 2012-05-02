@@ -1,11 +1,14 @@
 package com.sadbagel.checkers;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -26,6 +29,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	Image redKing = null;
 	Image blackPiece = null;
 	Image blackKing = null;
+	Image blackSpace = null;
+	Image whiteSpace = null;
 	
 	//Variables for tracking current move
 	final int RED = 0;
@@ -41,19 +46,68 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	final int B = 2;
 	final int BK = 3;
 	
+	
 	//Board Configuration
-	int board[][] = new int[8][8];
+	MouseOverArea board[][] = new MouseOverArea[8][8];//directions are -->,VVV
+	int boardX = 60;
+	int boardY = 60;
+	private Image title;
+
+	private Image banner;
+
+	private Music backgroundMusic;
+	private GameContainer container;
 	
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1)
 			throws SlickException {
 		//Setup GameBoard and Images
+		this.container = arg0;
+		
+		background = new Image("data/images/bg3.jpg");
+		title = ResourceManager.getImage("title");
+		banner = ResourceManager.getImage("banner");
+		
+		redPiece = ResourceManager.getImage("red");
+		blackPiece = ResourceManager.getImage("black");
+		blackSpace = ResourceManager.getImage("blackspace");
+		whiteSpace = ResourceManager.getImage("whitespace");
+		
+		//Init Board
+		for(int i=0;i<8;i++)
+		{
+			for(int j=0;j<8;j++)
+			{
+				board[i][j]=new MouseOverArea(
+						this.container,
+							((i+j)%2==0?whiteSpace:blackSpace)/*Alternating white and black squares. Formula is arbitrary.*/,
+							boardX+32*i,
+							boardY+32*j,
+							32,
+							32);
+				board[i][j].addListener(new SquareListener(i,j));
+			}
+		}
+		
+		backgroundMusic = ResourceManager.getMusic("normal");
+		backgroundMusic.loop();
 	}
 
 	@Override
 	public void render(GameContainer arg0, StateBasedGame arg1, Graphics arg2)
 			throws SlickException {
 		//Render the background, game board, pieces, and menu (if activated)
+
+				background.draw(0, 0);
+				for(int i=0;i<8;i++)
+				{
+					for(int j=0;j<8;j++)
+					{
+						board[i][j].render(arg0,arg2);
+					}
+				}
+				
+		
 	}
 
 	@Override
@@ -69,9 +123,34 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		return stateID;
 	}
 	
+
+	
 	@Override
 	public void componentActivated(AbstractComponent arg0) {
 		//Handle the clicking of pieces, and of the menu
+		System.out.println("Lol, GameScreen got activated");
+		int bx;//Board coordinates of the clicked square
+		int by;
+	}
+	
+	//Was gonna have a listener in each square, have that activate the GameScreen so it can handle what's up
+	private class SquareListener implements ComponentListener
+	{
+		private int x;
+		private int y;
+		public SquareListener(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public void componentActivated(AbstractComponent arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("SquareListener at board x"+x+" y"+y+" activated.");
+			//Gamescreen.activate;//Notify GameScreen that this square has been clicked, and let it handle that.
+		}
+		
 	}
 
 }
