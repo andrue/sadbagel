@@ -32,16 +32,13 @@
 	<image key="quitgame" file="images/quitgame.png"/>
 	
 	<image key="red" file="images/r.png"/>
-	<image key="redking" file="images/rk.png"></image>
+	<image key="redking" file="images/rk.png"/>
 	<image key="black" file="images/b.png"/>
 	<image key="blackking" file="images/bk.png"/>
 	<image key="whitespace" file="images/whitespace.png"/>
 	<image key="blackspace" file="images/blackspace.png"/>
 
 	<!-- sheets 
-	<sheet key="player" file="images/player.png" width="32" height="32" />
-	<sheet key="tower" file="images/tower.png" width="32" height="64" />
-	<sheet key="button_build" file="images/btn_build.png" width="32" height="32" />
-	<sheet key="button_lv2" file="images/btn_lv2.png" width="32" height="32" />
-	<sheet key="button_lv3" file="images/btn_lv3.png" width="32" height="32" /> -->
+	<sheet key="player" file="images/player.png" width="32" height="32" /> 
+	-->
 </resources>
