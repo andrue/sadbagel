@@ -9,6 +9,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.MouseOverArea;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -42,6 +43,10 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	Image redPiece = null;
 	Image blackPiece = null;
 	
+	
+	TextField text = null;
+	private String message = "Hi.";
+	
 	private GameContainer container;
 	
 	@Override
@@ -70,7 +75,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//Sets up Title Menu Areas, Variables, images, etc.
-		background = new Image("data/images/bg3.jpg");
+		background = ResourceManager.getImage("bg3");
 		title = ResourceManager.getImage("title");
 		banner = ResourceManager.getImage("banner");
 		
@@ -78,7 +83,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		blackPiece = ResourceManager.getImage("black");
 		
 		backgroundMusic = ResourceManager.getMusic("normal");
-		backgroundMusic.loop();
+		//backgroundMusic.loop();
 		
 	}
 
@@ -89,17 +94,17 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	
 	float bgX = -800.0f;
 	float bgY = -200.0f;
+	float bgAngle = 0.0f;
 	
 	@Override
-	public void render(GameContainer container, StateBasedGame arg1, Graphics g)
+	public void render(GameContainer container, StateBasedGame sbg, Graphics g)
 			throws SlickException {
-		//Renders the current screen
 		
 		//Render Background
 		background.draw(bgX, bgY);
-		bgX += .01f;
-		
-		//Update background draw
+		background.rotate(bgAngle);
+		bgAngle += .000025f;
+		bgAngle %= 360.0f;
 		
 		//Render Title
 		if(animateTitle == 0){
@@ -135,10 +140,12 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		//Render Menu
 		menu.render(container, g);
 		
+		g.drawString(message, 200, 550);
+		
 	}
 
 	@Override
-	public void update(GameContainer arg0, StateBasedGame arg1, int arg2)
+	public void update(GameContainer container, StateBasedGame sbg, int delta)
 			throws SlickException {
 		//Updates variables/options based on user-input
 	}
@@ -150,8 +157,22 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	}
 
 	@Override
-	public void componentActivated(AbstractComponent arg0) {
+	public void componentActivated(AbstractComponent source) {
 		//Handles the Mouse Interactions
+		for (int i=0;i<4;i++) {
+			if (source == menu.areas[NEWGAME]) {
+				message = "New Game pressed!";
+			}
+			else if (source == menu.areas[LOADGAME]){
+				message = "Load Game pressed!";
+			}
+			else if (source == menu.areas[STATISTICS]){
+				message = "Statistics pressed!";
+			}
+			else if (source == menu.areas[QUITGAME]){
+				message = "Quit Game pressed!";
+			}
+		}
 	}
 	
 }

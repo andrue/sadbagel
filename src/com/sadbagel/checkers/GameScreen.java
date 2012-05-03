@@ -44,10 +44,16 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Board Configuration
 	int board[][] = new int[8][8];
 	
+	//Board Draw Top-Left
+	int boardTLX = 0;
+	int boardTLY = 0;
+	
+	
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1)
 			throws SlickException {
 		//Setup GameBoard and Images
+		Checkers.initRessources();
 	}
 
 	@Override
