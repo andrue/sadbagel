@@ -54,7 +54,10 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 			throws SlickException {
 		
 		//Init Resources
-		Checkers.initRessources();
+		if(!Globals.RESOURCES_INITIATED){
+			Checkers.initRessources();
+		}
+		
 		menu = new Menu(0,0);
 				
 		//Setup Menu
