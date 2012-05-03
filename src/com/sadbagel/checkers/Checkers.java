@@ -17,6 +17,7 @@ public class Checkers extends StateBasedGame {
         this.addState(new TitleScreen(TITLESCREENSTATE));
         this.addState(new GameScreen(GAMESCREENSTATE));
         this.enterState(TITLESCREENSTATE);
+    	Globals.GAME = this;//I'm going to hell for this.
     }
     
     @Override
@@ -35,7 +36,7 @@ public class Checkers extends StateBasedGame {
 		}
 		catch (IOException e)
 		{
-			//Log.error("failed to load ressource file 'data/resources.xml': " + e.getMessage());
+			//Log.error("failed to load resource file 'data/resources.xml': " + e.getMessage());
 			throw new SlickException("Resource loading failed!");
 		}
 

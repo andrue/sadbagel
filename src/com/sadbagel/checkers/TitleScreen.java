@@ -45,7 +45,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	
 	
 	TextField text = null;
-	private String message = "Hi.";
+	private String message = "Hi Ryan.";
 	
 	private GameContainer container;
 	
@@ -58,18 +58,18 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		menu = new Menu(0,0);
 				
 		//Setup Menu
-		this.container = container;
+		this.container = container;//Ryan: changed menus.areas[i] = bleh --> menus.setArea(i, object) so that we can add listeners
 		for (int i=0;i<4;i++) {
 			switch(i){
-				case 0:	menu.areas[i] = new MouseOverArea(this.container, ResourceManager.getImage("startgame"), 265,  320 + (i*50), 270, 42, this);
+				case 0:	menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), 265,  320 + (i*50), 270, 42, this));
 						break;
-				case 1: menu.areas[i] = new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), 265,  320 + (i*50), 270, 42, this);
+				case 1: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), 265,  320 + (i*50), 270, 42, this));
 						break;
-				case 2: menu.areas[i] = new MouseOverArea(this.container, ResourceManager.getImage("stat"), 265,  320 + (i*50), 270, 42, this);
+				case 2: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("stat"), 265,  320 + (i*50), 270, 42, this));
 						break;
-				case 3: menu.areas[i] = new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), 265,  320 + (i*50), 270, 42, this);
+				case 3: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), 265,  320 + (i*50), 270, 42, this));
 						break;				
-			}
+			}//also I think you're going to hell for using a switch inside a for loop, but that's personal preference - Ryan (All right, then, I'll go to hell -MT)
 			menu.areas[i].setNormalColor(new Color(1,1,1,0.8f));
 			menu.areas[i].setMouseOverColor(new Color(1,1,1,0.9f));
 		}
@@ -159,20 +159,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	@Override
 	public void componentActivated(AbstractComponent source) {
 		//Handles the Mouse Interactions
-		for (int i=0;i<4;i++) {
-			if (source == menu.areas[NEWGAME]) {
-				message = "New Game pressed!";
-			}
-			else if (source == menu.areas[LOADGAME]){
-				message = "Load Game pressed!";
-			}
-			else if (source == menu.areas[STATISTICS]){
-				message = "Statistics pressed!";
-			}
-			else if (source == menu.areas[QUITGAME]){
-				message = "Quit Game pressed!";
-			}
-		}
 	}
 	
 }
