@@ -9,7 +9,6 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.Transition;
 
 public class Menu{
 
@@ -17,7 +16,7 @@ public class Menu{
 	Image buttons[] = null;
 
 	//Menu Button Variables
-	static private int NUMBUTTONS = 4;//Felt like the hardcoded 4 was a bit much, y'know?
+	static private int NUMBUTTONS = 5;//Felt like the hardcoded 4 was a bit much, y'know?
 	static final int NEWGAME = 0;
 	static final int SAVEGAME = 1;
 	static final int LOADGAME = 2;
@@ -25,6 +24,9 @@ public class Menu{
 	static final int QUITGAME = 4;
 	
 	//Need close menu and surrender game buttons
+	
+	//Misc Variables
+	public boolean shouldExit = false;
 
 	//Clickable Regions
 	public MouseOverArea[] areas = new MouseOverArea[NUMBUTTONS];
@@ -39,14 +41,6 @@ public class Menu{
 		NUMBUTTONS = buttons;
 		this.x = x;
 		this.y = y;
-
-		/*
-		//but they're null at this point...
-		for(int i=0;i<NUMBUTTONS;i++)
-		{
-			areas[i].addListener(areasListener[i]);
-		}
-		 */
 	}
 	
 	public Menu(int x, int y)//Default call (ie TitleScreen)
@@ -60,7 +54,6 @@ public class Menu{
 		if(isActivated()){
 			for(int i=0;i<NUMBUTTONS;i++){
 				areas[i].render(container, g);
-
 			}
 		}
 
@@ -104,6 +97,7 @@ public class Menu{
 		public void componentActivated(AbstractComponent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println(this+" was activated");
+			//TODO: Add condition code for the menu options.
 			switch(buttonNum)
 			{
 			case -1: throw new Error("For some god-awful reason, a ButtonListener was either not initialized or initialized to -1."); /*Putting a break here makes it complain about unreachable code*/ 
@@ -121,10 +115,42 @@ public class Menu{
 					Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE);
 				}
 				break; 
-			case SAVEGAME: break;
-			case LOADGAME: toggle(); break;
-			case STATISTICS: break;
-			case QUITGAME: break;
+			
+			case SAVEGAME: 				
+			if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+				//Can't exactly save during the title screen.
+			}
+			else{
+				//Logic for saving the current game.
+			}break;
+			
+			case LOADGAME: 
+				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+					//Load game from Title Screen
+				}
+				else{
+					//Load game from Game Screen
+				}
+				break;
+			case STATISTICS: 
+				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+					//Show 'stics from Title Screen
+				}
+				else{
+					//Show 'stics from Game Screen
+				}
+				break;
+			case QUITGAME: 
+				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+					//Code to quit the game...
+					//Exiting code is handled by a states update() method
+					shouldExit = true;
+				}
+				else{
+					//stupid code for checking if game is over, etc, etc...
+					shouldExit = true;
+				}
+				break;
 			}
 		}
 

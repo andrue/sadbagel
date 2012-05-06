@@ -51,10 +51,6 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	MouseOverArea board[][] = new MouseOverArea[8][8];//directions are -->,VVV
 	int boardX = 60;
 	int boardY = 60;
-	
-	//Probably remove these...
-	private Image title;
-	private Image banner;
 
 	private Music backgroundMusic;
 	private GameContainer container;
@@ -62,6 +58,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Board Draw Top-Left
 	int boardTLX = 0;
 	int boardTLY = 0;
+	
+	//Button Functions
+	Image optionsImage = null;
+	MouseOverArea options;
+	private boolean toggleMenu = false;
 	
 	
 	@Override
@@ -75,13 +76,13 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		this.container = container;
 		
 		background = new Image("data/images/bg3.jpg");
-		title = ResourceManager.getImage("title");
-		banner = ResourceManager.getImage("banner");
 		
 		redPiece = ResourceManager.getImage("red");
 		blackPiece = ResourceManager.getImage("black");
 		blackSpace = ResourceManager.getImage("blackspace");
 		whiteSpace = ResourceManager.getImage("whitespace");
+		
+		optionsImage = ResourceManager.getImage("options");
 		
 		//Init Board
 		for(int i=0;i<8;i++)
@@ -91,33 +92,45 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				board[i][j]=new MouseOverArea(
 						this.container,
 							((i+j)%2==0?whiteSpace:blackSpace)/*Alternating white and black squares. Formula is arbitrary.*/,
-							boardX+32*i,
-							boardY+32*j,
-							32,
-							32);
+							boardX+64*i,
+							boardY+64*j,
+							64,
+							64);
 				board[i][j].addListener(new SquareListener(i,j,this));
 			}
 			
 		}
 		
-		menu = new Menu(265,320);
+		//Setup Options Menu button
+		//TODO: Create new Options Button, smaller, etc
+		options = new MouseOverArea(container, optionsImage, 600, 550, 270, 42, this);
 		
 		//Setup Menu
+		//TODO: Change Start Game -> New Game image		
+		menu = new Menu(265,320, 5);
 		this.container = container;//Ryan: changed menus.areas[i] = bleh --> menus.setArea(i, object) so that we can add listeners
-		for (int i=0;i<4;i++) {
-			switch(i){
-				case 0:	menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 1: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 2: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("stat"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 3: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;				
-			}//also I think you're going to hell for using a switch inside a for loop, but that's personal preference - Ryan (All right, then, I'll go to hell -MT)
+		for (int i=0;i<5;i++) {
+			if( i == Menu.NEWGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), menu.x,  menu.y + (i*50), 270, 42, this));				
+			}
+			else if (i == Menu.SAVEGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("savegame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
+			else if (i == Menu.LOADGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
+			else if (i == Menu.STATISTICS){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("stat"), menu.x,  menu.y + (i*50), 270, 42, this));				
+			}
+			else if (i == Menu.QUITGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
 			menu.areas[i].setNormalColor(new Color(1,1,1,0.8f));
 			menu.areas[i].setMouseOverColor(new Color(1,1,1,0.9f));
 		}
+		
+		//Turn off Menu
+		menu.toggle();
 		
 		backgroundMusic = ResourceManager.getMusic("normal");
 		backgroundMusic.loop();
@@ -128,26 +141,46 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			throws SlickException {
 		//Render the background, game board, pieces, and menu (if activated)
 
-				background.draw(0, 0);
-				for(int i=0;i<8;i++)
-				{
-					for(int j=0;j<8;j++)
-					{
-						board[i][j].render(arg0,arg2);
-					}
-				}
-				
-				if(menu.isActivated())
-					menu.render(arg0, arg2);
-				
+		background.draw(0, 0);
+		for(int i=0;i<8;i++)
+		{
+			for(int j=0;j<8;j++)
+			{
+				board[i][j].render(arg0,arg2);
+			}
+		}
 		
+		//TODO: Draw the Pieces on top of the game board
+		//Game Board tiles will be 64 x 64, pieces are 32x32
+		//So there will be a trim of 16px around the pieces on all sides
+		
+				
+		//TODO: Andy will make pieces able to move/jump using magic
+		//movement.render(arg0, arg2);
+		
+		//Options Menu Stuff
+		options.render(arg0, arg2);	
+		if(menu.isActivated())
+			menu.render(arg0, arg2);
 	}
 
 	@Override
 	public void update(GameContainer arg0, StateBasedGame arg1, int arg2)
 			throws SlickException {
-		//Update piece positions based on Back-end
-		//Animate the pieces jumping one another
+		
+		//Check if the game wants to exit
+		if(menu.shouldExit){
+			container.exit();	
+		}
+			
+		//Check if menu needs to be toggled
+		if(toggleMenu){
+			toggleMenu = false;
+			menu.toggle();
+		}
+		
+		//TODO: Add all the game logic-ness here
+		
 	}
 
 	@Override
@@ -171,11 +204,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	}
 	
 	//TODO: Evaluate whether this is still necessary
-	public void componentActivated(AbstractComponent arg0) {
-		//Handle the clicking of pieces, and of the menu
-		System.out.println("Lol, GameScreen got activated");
-		int bx;//Board coordinates of the clicked square
-		int by;
+	//Was lazy, so added the options menu button directly to GameScreen :D
+	public void componentActivated(AbstractComponent source) {
+		//Check if Options Button is Clicked
+		if (source == options) {
+			toggleMenu = true;
+		}
 	}
 	
 	//Was gonna have a listener in each square, have that activate the GameScreen so it can handle what's up
@@ -196,6 +230,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			// TODO Auto-generated method stub
 			System.out.println("SquareListener at board x"+x+" y"+y+" activated.");
 			//Gamescreen.activate;//Notify GameScreen that this square has been clicked, and let it handle that.
+			//Only accept mouse clicks when Menu is not activated
 			if(!menu.isActivated())
 				game.squareClicked(x,y);
 		}

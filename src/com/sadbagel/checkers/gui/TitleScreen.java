@@ -27,12 +27,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	Image title = null;
 	Image banner = null;
 	
-	//Title Screen-Menu Variables
-	static final int NEWGAME = 0;
-	static final int LOADGAME = 1;
-	static final int STATISTICS = 2;
-	static final int QUITGAME = 3;
-	
 	//Music
 	Music backgroundMusic = null;
 	
@@ -58,23 +52,34 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 			Checkers.initRessources();
 		}
 		
-		menu = new Menu(265,320);
+		menu = new Menu(265,320, 5);
 				
 		//Setup Menu
 		this.container = container;//Ryan: changed menus.areas[i] = bleh --> menus.setArea(i, object) so that we can add listeners
-		for (int i=0;i<4;i++) {
-			switch(i){
-				case 0:	menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 1: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 2: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("stat"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;
-				case 3: menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), menu.x,  menu.y + (i*50), 270, 42, this));
-						break;				
-			}//also I think you're going to hell for using a switch inside a for loop, but that's personal preference - Ryan (All right, then, I'll go to hell -MT)
-			menu.areas[i].setNormalColor(new Color(1,1,1,0.8f));
-			menu.areas[i].setMouseOverColor(new Color(1,1,1,0.9f));
+		for (int i=0;i<5;i++) {
+			if( i == Menu.NEWGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), menu.x,  menu.y + (i*50), 270, 42, this));				
+			}
+			else if (i == Menu.SAVEGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("savegame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
+			else if (i == Menu.LOADGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("loadgame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
+			else if (i == Menu.STATISTICS){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("stat"), menu.x,  menu.y + (i*50), 270, 42, this));				
+			}
+			else if (i == Menu.QUITGAME){
+				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("quitgame"), menu.x,  menu.y + (i*50), 270, 42, this));
+			}
+			
+			if(i == Menu.SAVEGAME){
+				menu.areas[i].setNormalColor(new Color(1,1,1,0.3f));
+				menu.areas[i].setMouseOverColor(new Color(1,1,1,0.3f));
+			}else{
+				menu.areas[i].setNormalColor(new Color(1,1,1,0.8f));
+				menu.areas[i].setMouseOverColor(new Color(1,1,1,0.9f));
+			}				
 		}
 		
 		//Sets up Title Menu Areas, Variables, images, etc.
@@ -150,6 +155,9 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	public void update(GameContainer container, StateBasedGame sbg, int delta)
 			throws SlickException {
 		//Updates variables/options based on user-input
+		if(menu.shouldExit){
+			container.exit();	
+		}
 	}
 
 	@Override

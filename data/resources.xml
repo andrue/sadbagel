@@ -28,8 +28,10 @@
 	
 	<image key="startgame" file="images/startgame.png"/>
 	<image key="loadgame" file="images/loadgame.png"/>
+	<image key="savegame" file="images/loadgame.png"/>
 	<image key="stat" file="images/stat.png"/>
 	<image key="quitgame" file="images/quitgame.png"/>
+	<image key="options" file="images/options.png"/>
 	
 	<image key="red" file="images/r.png"/>
 	<image key="redking" file="images/rk.png"/>
