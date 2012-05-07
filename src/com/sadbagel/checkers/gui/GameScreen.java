@@ -151,8 +151,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//TODO: Draw the Pieces on top of the game board
-		//Game Board tiles will be 64 x 64, pieces are 32x32
-		//So there will be a trim of 16px around the pieces on all sides
+		//Game Board tiles will be 64 x 64, pieces will be 48x48
+		//So there will be a trim of 6px around the pieces on all sides
 		
 				
 		//TODO: Andy will make pieces able to move/jump using magic
