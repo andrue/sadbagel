@@ -37,10 +37,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	Image redPiece = null;
 	Image blackPiece = null;
 	
-	
-	TextField text = null;
-	private String message = "Hi Ryan.";
-	
 	private GameContainer container;
 	
 	@Override
@@ -145,10 +141,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		redPiece.draw(750, 400);
 		blackPiece.draw(750, 450);
 		
-		menu.render(container, g);
-		
-		g.drawString(message, 200, 550);
-		
+		menu.render(container, g);		
 	}
 
 	@Override

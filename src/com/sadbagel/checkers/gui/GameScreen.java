@@ -103,7 +103,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 		//Setup Options Menu button
 		//TODO: Create new Options Button, smaller, etc
-		options = new MouseOverArea(container, optionsImage, 600, 550, 270, 42, this);
+		options = new MouseOverArea(container, optionsImage, 637, 550, 163, 29, this);
 		
 		//Setup Menu
 		//TODO: Change Start Game -> New Game image		
@@ -137,7 +137,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	}
 
 	@Override
-	public void render(GameContainer arg0, StateBasedGame arg1, Graphics arg2)
+	public void render(GameContainer container, StateBasedGame sbg, Graphics g)
 			throws SlickException {
 		//Render the background, game board, pieces, and menu (if activated)
 
@@ -146,7 +146,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		{
 			for(int j=0;j<8;j++)
 			{
-				board[i][j].render(arg0,arg2);
+				board[i][j].render(container,g);
 			}
 		}
 		
@@ -159,9 +159,15 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//movement.render(arg0, arg2);
 		
 		//Options Menu Stuff
-		options.render(arg0, arg2);	
-		if(menu.isActivated())
-			menu.render(arg0, arg2);
+		if(menu.isActivated()){
+			g.setColor(new Color(0,0,0,200));
+			//g.setColor(Color.black);
+			g.fillRect(0, 0, 800, 600);
+			menu.render(container, g);
+		}
+		options.render(container, g);
+		
+		
 	}
 
 	@Override

@@ -81,11 +81,8 @@ public class Menu{
 	 * Toggles a menu to render
 	 */
 	public void toggle(){
-		activated += 1;
-		activated %= 2;
+		activated = (activated + 1) % 2;
 	}
-
-
 
 	private class ButtonListener implements ComponentListener
 	{
