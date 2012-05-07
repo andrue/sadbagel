@@ -3,11 +3,21 @@ package com.sadbagel.checkers.gui;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public class StatGUI {
 	
 	private int activated = 0;
+	private Image title = null;
+	
+	public StatGUI(){
+		
+	}
+	
+	public void init(){
+		title = ResourceManager.getImage("titleStatistics");
+	}
 	
 	public void toggle(){
 		activated = (activated + 1) % 2;
@@ -28,7 +38,9 @@ public class StatGUI {
 			g.setColor(new Color(0,0,0,200));
 			g.fillRect(0, 0, 800, 600);
 			
+			title.draw(210, 42);
 			
+			//Draw the statistics to the screeeeen
 			
 		}
 	}

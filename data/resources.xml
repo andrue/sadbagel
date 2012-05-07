@@ -17,8 +17,11 @@
 	<music key="normal" file="music/titlescreen.ogg" />
 	<music key="kinged" file="music/bg2.ogg" />
 	
-	<!-- images -->
+	<!-- Image Titles -->
 	<image key="title" file="images/title.png"/>
+	<image key="titleStatistics" file="images/titleStatistics.png"/>
+	
+	<!--  Images -->
 	<image key="bg3" file="images/bg3.jpg"/>
 	<image key="menu" file="images/bk.png"/>
 	

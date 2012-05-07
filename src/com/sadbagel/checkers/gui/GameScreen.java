@@ -64,6 +64,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	MouseOverArea options;
 	private boolean toggleMenu = false;
 	
+	//StatGUI
+	StatGUI stat = new StatGUI();
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg)
@@ -101,9 +103,9 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			
 		}
 		
-		//Setup Options Menu button
-		//TODO: Create new Options Button, smaller, etc
+		//Setup Options and Overlays
 		options = new MouseOverArea(container, optionsImage, 637, 550, 163, 29, this);
+		stat.init();
 		
 		//Setup Menu
 		//TODO: Change Start Game -> New Game image		
@@ -167,6 +169,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		options.render(container, g);
 		
+		stat.render(container, g);		
 		
 	}
 
@@ -215,6 +218,13 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Check if Options Button is Clicked
 		if (source == options) {
 			toggleMenu = true;
+		}
+
+		//Being lazy and coding the Statistics Button here...
+		if(source == menu.areas[Menu.STATISTICS]){
+			/*Do something to deactivate the menu-buttons
+			  while the statistics-overlay being shown */
+			stat.toggle();
 		}
 	}
 	
