@@ -69,6 +69,14 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	MouseOverArea showStatistics;
 	StatGUI stat = new StatGUI();
 	
+	//Surrender Button
+	MouseOverArea surrender;
+
+	
+	//Prompt Boxes
+	PromptBox surrenderBox;
+	PromptBox newGameBox;
+	
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg)
 			throws SlickException {
@@ -107,9 +115,23 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//Setup Options and Overlays
-		options = new MouseOverArea(container, ResourceManager.getImage("options"), 637, 550, 163, 29, this);
+		options = new MouseOverArea(container, ResourceManager.getImage("showOptions"), 637, 550, 163, 29, this);
 		showStatistics = new MouseOverArea(container, ResourceManager.getImage("showStatistics"), 637, 550, 163, 29, this);
+		surrender = new MouseOverArea(container, ResourceManager.getImage("surrender"), 675, 510, 130, 29, this);
 		stat.init();
+		surrenderBox = new PromptBox("Warning: Surrendering will result in a loss.\n" +
+				"\n" +
+				"Are you sure you want to lose?!\n" +
+				"ARE YOU!? What are you, some big loser?\n" +
+				"Well, just choose 'OK' if you want to give up and wish to lose.\n" +
+				"Otherwise, choose 'CANCEL' if you want to try to be a winner!");//TODO: Make better prompt boxes...
+		
+		newGameBox = new PromptBox("Warning: Starting a new game when a game is currently in progress\n" +
+				"will result in a loss.\n" +
+				"\n" +
+				"Are you sure you want to continue and lose?\n" +
+				"Just click 'OK' to lose and start a new game,\n" +
+				"or click 'CANCEL' if you want to try to win.");
 		
 		//Setup Menu
 		//TODO: Change Start Game -> New Game image		
@@ -164,6 +186,10 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//TODO: Andy will make pieces able to move/jump using magic
 		//movement.render(arg0, arg2);
 		
+		
+		//Render Surrender Button
+		surrender.render(container, g);
+		
 		//Options Menu Stuff
 		if(menu.isActivated()){
 			g.setColor(new Color(0,0,0,200));
@@ -171,12 +197,17 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			g.fillRect(0, 0, 800, 600);
 			menu.render(container, g);
 		}
-		
 		options.render(container, g);
 		stat.render(container, g);
 		if(stat.isActivated()){
 			showStatistics.render(container, g);
 		}
+		
+		//SurrenderBox Prompt
+		surrenderBox.render(container, g);
+		
+		//NewGame Prompt
+		newGameBox.render(container, g);
 		
 	}
 
@@ -224,8 +255,16 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Coding Menu stuff per Screen because I can.
 	public void componentActivated(AbstractComponent source) {
 		
+		//Surrender
+		if(source == surrender && !menu.isActivated()){
+			//Prompt User of Consequences
+			//Save Statistics
+			//Prompt User for New Game or Exit Game
+			surrenderBox.toggle();
+		}
+		
 		//Listens for "Show Options"
-		if (source == options && !stat.isActivated()) {
+		if(source == options && !stat.isActivated() && !surrenderBox.isActivated() && !newGameBox.isActivated()) {
 			toggleMenu = true;
 		}
 		
@@ -235,10 +274,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 
 		//Being lazy and coding the menu stuff here...
-		if(menu.isActivated()){
+		if(menu.isActivated() && !newGameBox.isActivated()){
 			if(!stat.isActivated()){ //TODO: add logic to check other overlays
 				if(source == menu.areas[Menu.NEWGAME]){
 					//Logic for New Game while playing a Game
+					newGameBox.toggle();//Should only toggle if game is not finished
 				}
 				else if (source == menu.areas[Menu.SAVEGAME]){
 					//Logic for Saving Game
@@ -278,7 +318,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			System.out.println("SquareListener at board x"+x+" y"+y+" activated.");
 			//Gamescreen.activate;//Notify GameScreen that this square has been clicked, and let it handle that.
 			//Only accept mouse clicks when Menu is not activated
-			if(!menu.isActivated())
+			if(!menu.isActivated() && !surrenderBox.isActivated())
 				game.squareClicked(x,y);
 		}
 		

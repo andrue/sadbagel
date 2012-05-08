@@ -35,10 +35,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	//Menu
 	Menu menu = null;
 	
-	//Pieces
-	Image redPiece = null;
-	Image blackPiece = null;
-	
 	private GameContainer container;
 	
 	@Override
@@ -84,9 +80,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		background = ResourceManager.getImage("bg3");
 		title = ResourceManager.getImage("title");
 		banner = ResourceManager.getImage("banner");
-		
-		redPiece = ResourceManager.getImage("red");
-		blackPiece = ResourceManager.getImage("black");
 		
 		backgroundMusic = ResourceManager.getMusic("normal");
 		//backgroundMusic.loop();
@@ -140,9 +133,6 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 			title.draw(50, 100);
 		}
 		
-		redPiece.draw(750, 400);
-		blackPiece.draw(750, 450);
-		
 		menu.render(container, g);		
 	}
 
@@ -164,6 +154,7 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	@Override
 	public void componentActivated(AbstractComponent source) {
 		//Handles the Mouse Interactions
+		//TODO: Add logic to check for overlays
 		if(source == menu.areas[Menu.NEWGAME]){
 			Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
 		}
