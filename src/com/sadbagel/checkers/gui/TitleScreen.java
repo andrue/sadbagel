@@ -12,6 +12,8 @@ import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class TitleScreen extends BasicGameState implements ComponentListener{
 	
@@ -162,6 +164,12 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	@Override
 	public void componentActivated(AbstractComponent source) {
 		//Handles the Mouse Interactions
+		if(source == menu.areas[Menu.NEWGAME]){
+			Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
+		}
+		else if(source == menu.areas[Menu.QUITGAME]){
+			menu.shouldExit = true;
+		}
 	}
 	
 }

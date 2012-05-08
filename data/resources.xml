@@ -27,19 +27,21 @@
 	
 	<image key="banner" file="images/blackbanner.png"/>
 	
-	<image key="startgame" file="images/startgame.png"/>
-	<image key="loadgame" file="images/loadgame.png"/>
-	<image key="savegame" file="images/savegame.png"/>
-	<image key="stat" file="images/stat.png"/>
-	<image key="quitgame" file="images/quitgame.png"/>
-	<image key="options" file="images/options.png"/>
-	
 	<image key="red" file="images/r.png"/>
 	<image key="redking" file="images/rk.png"/>
 	<image key="black" file="images/b.png"/>
 	<image key="blackking" file="images/bk.png"/>
 	<image key="whitespace" file="images/whitespace.png"/>
 	<image key="blackspace" file="images/blackspace.png"/>
+
+	<!--  Buttons -->
+	<image key="startgame" file="images/startgame.png"/>
+	<image key="loadgame" file="images/loadgame.png"/>
+	<image key="savegame" file="images/savegame.png"/>
+	<image key="stat" file="images/stat.png"/>
+	<image key="quitgame" file="images/quitgame.png"/>
+	<image key="options" file="images/options.png"/>
+	<image key="showStatistics" file="images/show_statistics.png"/>
 
 	<!-- sheets 
 	<sheet key="player" file="images/player.png" width="32" height="32" /> 

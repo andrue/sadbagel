@@ -84,6 +84,9 @@ public class Menu{
 		activated = (activated + 1) % 2;
 	}
 
+	//TODO: I like this code, but it's easier to code the logic per screen because
+	// of the overlays. :( Albeit, I could make all of the overlays and menu static,
+	// but I already started doing it the aforementioned way.
 	private class ButtonListener implements ComponentListener
 	{
 		private int buttonNum = -1; 
@@ -101,15 +104,10 @@ public class Menu{
 			case NEWGAME: System.out.println("New game, eh?");
 				//Check if TitleScreen in order to use spiffy fades
 				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
-					Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
+					//Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
 				}
 				else{
-					//Assumes in a GameState
-					//Check if Game is Finished
-						//If-Finished, start new game
-						//If-Not-Finished, notify user that game will count as loss, ask to continue
-						//Invoke StatAPI if start new game, update appropriately.
-					Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE);
+					//GameSreen Case
 				}
 				break; 
 			
@@ -141,11 +139,7 @@ public class Menu{
 				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
 					//Code to quit the game...
 					//Exiting code is handled by a states update() method
-					shouldExit = true;
-				}
-				else{
-					//stupid code for checking if game is over, etc, etc...
-					shouldExit = true;
+					//shouldExit = true;
 				}
 				break;
 			}

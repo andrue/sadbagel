@@ -65,6 +65,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	private boolean toggleMenu = false;
 	
 	//StatGUI
+	Image statisticsImage = null;
+	MouseOverArea showStatistics;
 	StatGUI stat = new StatGUI();
 	
 	@Override
@@ -86,6 +88,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 		optionsImage = ResourceManager.getImage("options");
 		
+		
 		//Init Board
 		for(int i=0;i<8;i++)
 		{
@@ -104,7 +107,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//Setup Options and Overlays
-		options = new MouseOverArea(container, optionsImage, 637, 550, 163, 29, this);
+		options = new MouseOverArea(container, ResourceManager.getImage("options"), 637, 550, 163, 29, this);
+		showStatistics = new MouseOverArea(container, ResourceManager.getImage("showStatistics"), 637, 550, 163, 29, this);
 		stat.init();
 		
 		//Setup Menu
@@ -167,9 +171,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			g.fillRect(0, 0, 800, 600);
 			menu.render(container, g);
 		}
-		options.render(container, g);
 		
-		stat.render(container, g);		
+		options.render(container, g);
+		stat.render(container, g);
+		if(stat.isActivated()){
+			showStatistics.render(container, g);
+		}
 		
 	}
 
@@ -214,18 +221,42 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	
 	//TODO: Evaluate whether this is still necessary
 	//Was lazy, so added the options menu button directly to GameScreen :D
+	//Coding Menu stuff per Screen because I can.
 	public void componentActivated(AbstractComponent source) {
-		//Check if Options Button is Clicked
-		if (source == options) {
+		
+		//Listens for "Show Options"
+		if (source == options && !stat.isActivated()) {
 			toggleMenu = true;
 		}
-
-		//Being lazy and coding the Statistics Button here...
-		if(source == menu.areas[Menu.STATISTICS]){
-			/*Do something to deactivate the menu-buttons
-			  while the statistics-overlay being shown */
+		
+		//Listens for "Show Staistics" (closes Stat Overlay)
+		if(source == showStatistics && stat.isActivated()){
 			stat.toggle();
 		}
+
+		//Being lazy and coding the menu stuff here...
+		if(menu.isActivated()){
+			if(!stat.isActivated()){ //TODO: add logic to check other overlays
+				if(source == menu.areas[Menu.NEWGAME]){
+					//Logic for New Game while playing a Game
+				}
+				else if (source == menu.areas[Menu.SAVEGAME]){
+					//Logic for Saving Game
+				}
+				else if (source == menu.areas[Menu.LOADGAME]){
+					//Logic for Loading a Game
+				}
+				else if(source == menu.areas[Menu.STATISTICS]){
+					//Toggle the Statistics Overlay
+					stat.toggle();
+				}
+				else if (source == menu.areas[Menu.QUITGAME]){
+					//Logic for Quitting Game
+					menu.shouldExit = true; //Will redo this
+				}
+			}
+		}
+		
 	}
 	
 	//Was gonna have a listener in each square, have that activate the GameScreen so it can handle what's up
