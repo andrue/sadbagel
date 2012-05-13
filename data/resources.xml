@@ -27,9 +27,9 @@
 	
 	<image key="banner" file="images/blackbanner.png"/>
 	
-	<image key="red" file="images/r.png"/>
+	<image key="red" file="images/r1.png"/>
 	<image key="redking" file="images/rk.png"/>
-	<image key="black" file="images/b.png"/>
+	<image key="black" file="images/b1.png"/>
 	<image key="blackking" file="images/bk.png"/>
 	<image key="whitespace" file="images/whitespace.png"/>
 	<image key="blackspace" file="images/blackspace.png"/>

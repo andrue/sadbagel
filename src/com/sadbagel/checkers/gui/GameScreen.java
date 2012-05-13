@@ -233,27 +233,25 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//TODO: Draw the Pieces on top of the game board
 		//Game Board tiles will be 64 x 64, pieces will be 48x48
 		//So there will be a trim of 6px around the pieces on all sides
-		int offsetX = 3;
-		int offsetY = 3;
-		int padding = 6;
+		int padding = 8;
 		
 		for(int i=0; i < 8; i++){
 			for(int j=0; j < 8; j++){
 				if(guiBoard[i][j] == R){
 					//Draw Red
-					redPiece.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+					redPiece.draw(boardX + (j*64) + padding, boardY + (i*64) + padding);
 				}
 				else if(guiBoard[i][j] == B){
 					//Draw Black
-					blackPiece.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+					blackPiece.draw(boardX + (j*64) + padding, boardY + (i*64) + padding);
 				}
 				else if(guiBoard[i][j] == RK){
 					//Draw RedKing
-					redKing.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+					redKing.draw(boardX + (j*64) + padding, boardY + (i*64) + padding);
 				}
 				else if(guiBoard[i][j] == BK){
 					//Draw BlackKing
-					blackKing.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+					blackKing.draw(boardX + (j*64) + padding, boardY + (i*64) + padding);
 				}
 				else if(guiBoard[i][j] == E){
 					//do not draw
@@ -316,7 +314,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//TODO: Add all the game logic-ness here
 		possibleMoves = backendBoard.getPossibleMoves(turn); //Get Possible Moves for Current Player
 		
-		if(possibleMoves.isEmpty()){
+		if(possibleMoves.isEmpty() || gameOver){
 			gameOver = true; //No moves, game is over
 		}
 		else if(pieceMovement == null || !pieceMovement.isActivated()){
@@ -326,17 +324,16 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 					move = AI.playerAI(turn);
 				}
 				else{
-				//move = moveInput( possibleMoves );
+					//move = moveInput( possibleMoves );
 				}
-				
 			}
 			while( !possibleMoves.contains(move) );
 			
 			//makes move and promotes pieces
-			jumpFrom = backendBoard.move( move );
+			jumpFrom = backendBoard.move(move);
 			backendBoard.promote();
 			
-			possibleMoves = backendBoard.getJumps( jumpFrom,turn );			
+			possibleMoves = backendBoard.getJumps(jumpFrom, turn);			
 			
 			//if the last move was a jump and has another jump, allow the player to make the jump
 			while( !possibleMoves.isEmpty() ){
@@ -381,6 +378,9 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				}
 				
 			}
+			else{
+				gameOver = true;
+			}
 			
 		}
 		
@@ -412,8 +412,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	 *   Convoluted process to reach this method enables the board to be rendered differently while leaving this method the same.
 	 */
 	public void squareClicked(int x, int y) {
-		System.out.println("On the board, "+x+", "+y+" has been clicked.");
-		board[x][y].setNormalImage(redPiece);//Debug behavior, arbitrary
+		System.out.println("On the board, " + x + ", " + y + " has been clicked.");
 	}
 	
 	//TODO: Evaluate whether this is still necessary

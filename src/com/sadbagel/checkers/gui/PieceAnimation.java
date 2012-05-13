@@ -18,7 +18,7 @@ public class PieceAnimation {
 	
 	float x, y;
 	float endX, endY;
-	float speed = 4f;
+	float speed = 10f;
 	int jX, jY;
 	
 	//NW, NE, SW, SE: 0, 1, 2, 3
@@ -64,10 +64,15 @@ public class PieceAnimation {
 //		System.out.println("PA: Y:" + move.getMove().getEnd().getY());
 //		System.out.println("PA: X:" + move.getMove().getEnd().getX());
 		
-		x = (60 + (7 - move.getMove().getStart().getX())*64 + 9);
-		y = (60 + (7 - move.getMove().getStart().getY())*64 + 9);
-		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 9);
-		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 9);
+//		x = (60 + (7 - move.getMove().getStart().getX())*64 + 9);
+//		y = (60 + (7 - move.getMove().getStart().getY())*64 + 9);
+//		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 9);
+//		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 9);
+		
+		x = (60 + (7 - move.getMove().getStart().getX())*64 + 6);
+		y = (60 + (7 - move.getMove().getStart().getY())*64 + 6);
+		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 6);
+		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 6);
 		
 		//Determine Direction
 		if(x > endX){
