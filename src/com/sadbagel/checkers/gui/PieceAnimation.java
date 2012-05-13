@@ -18,40 +18,78 @@ public class PieceAnimation {
 	
 	float x, y;
 	float endX, endY;
-	float speed = 1.0f;
+	float speed = 4f;
 	int jX, jY;
+	
+	//NW, NE, SW, SE: 0, 1, 2, 3
+	int direction;
 	
 	public MouseOverArea okayButton = null;
 	public MouseOverArea cancelButton = null;
 	
 	PieceAnimation(GUIMovement move){
 		//Setup Piece Images
-		
-		if(move.getJumper() > 0){
-			jumper = ResourceManager.getImage(imageName(move.getJumper()));
+		if(move.getJumper() == 1){
+			jumper = ResourceManager.getImage("red");
 		}
-		
-		if(move.getJumpee() > 0){
-			jumpee = ResourceManager.getImage(imageName(move.getJumpee()));
+		else if(move.getJumper() == 2){
+			jumper = ResourceManager.getImage("black");
 		}
-		
-		jumper = ResourceManager.getImage("red");
-		jumpee = ResourceManager.getImage("red");
+		else if(move.getJumper() == 3){
+			jumper = ResourceManager.getImage("redking");
+		}
+		else if(move.getJumper() == 4){
+			jumper = ResourceManager.getImage("blackking");
+		}
+		if(move.getJumpee() == 1){
+			jumpee = ResourceManager.getImage("red");
+		}
+		else if(move.getJumpee() == 2){
+			jumpee = ResourceManager.getImage("black");
+		}
+		else if(move.getJumpee() == 3){
+			jumpee = ResourceManager.getImage("redking");
+		}
+		else if(move.getJumpee() == 4){
+			jumpee = ResourceManager.getImage("blackking");
+		}
 		
 		//Setup Coordinates
 		//draw(boardX + (j*64) + 9, boardY + (i*64) + 9)
 		
-		System.out.println("Jumper: " + move.getJumper());
-		System.out.println("Jumpee: " + move.getJumpee());
-		System.out.println("PA: Y:" + move.getMove().getStart().getY());
-		System.out.println("PA: X:" + move.getMove().getStart().getX());
-		System.out.println("PA: Y:" + move.getMove().getEnd().getY());
-		System.out.println("PA: X:" + move.getMove().getEnd().getX());
+//		System.out.println("Jumper: " + move.getJumper());
+//		System.out.println("Jumpee: " + move.getJumpee());
+//		System.out.println("PA: Y:" + move.getMove().getStart().getY());
+//		System.out.println("PA: X:" + move.getMove().getStart().getX());
+//		System.out.println("PA: Y:" + move.getMove().getEnd().getY());
+//		System.out.println("PA: X:" + move.getMove().getEnd().getX());
 		
 		x = (60 + (7 - move.getMove().getStart().getX())*64 + 9);
 		y = (60 + (7 - move.getMove().getStart().getY())*64 + 9);
 		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 9);
 		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 9);
+		
+		//Determine Direction
+		if(x > endX){
+			if(y > endY){
+				//NW
+				direction = 0;
+			}
+			else{
+				//SW
+				direction = 2;
+			}
+		}
+		else{
+			if(y > endY){
+				//NE
+				direction = 1;
+			}
+			else{
+				//SE
+				direction = 3;
+			}
+		}
 		
 		if(move.getJumpee() != 0){
 			jX = (60 + (7 - move.getCoordinate().getX())*64 + 9);
@@ -59,42 +97,42 @@ public class PieceAnimation {
 		}
 		
 	}
-
-	private String imageName(int x){
-		if(x == 1){
-			return "red";
-		}
-		else if(x == 2){
-			return "black";
-		}
-		else if(x == 3){
-			return "redking";
-		}
-		else if(x == 4){
-			return "blackking";
-		}
-		return "red";
-	}
 	
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		//Renders the menu on the current container
 		if(isActivated()){
-			if(x != endX){
-				if(x > endX){
-					x -= speed;
-				}
-				else{
-					x += speed;
-				}
+			if(direction == 0){
+				x -= speed;
+				y -= speed;
+				if(x < endX)
+					x = endX;
+				if(y < endY)
+					y = endY;
 			}
-			if(y != endY){
-				if(y > endY){
-					y -= speed;
-				}
-				else{
-					y += speed;
-				}
+			else if(direction == 1){
+				x += speed;
+				y -= speed;
+				if(x > endX)
+					x = endX;
+				if(y < endY)
+					y = endY;
+			}
+			else if(direction == 2){
+				x -= speed;
+				y += speed;
+				if(x < endX)
+					x = endX;
+				if(y > endY)
+					y = endY;
+			}
+			else if(direction == 3){
+				x += speed;
+				y += speed;
+				if(x > endX)
+					x = endX;
+				if(y > endY)
+					y = endY;
 			}
 
 			if(jumpee != null)
@@ -102,7 +140,6 @@ public class PieceAnimation {
 			
 			if(jumper != null)
 				jumper.draw(x,y);
-			
 			
 			if((Math.floor(x) == endX || Math.ceil(x) == endX) && 
 					(Math.floor(y) == endY || Math.ceil(y) == endY)){

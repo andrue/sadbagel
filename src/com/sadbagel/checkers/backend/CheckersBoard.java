@@ -91,7 +91,7 @@ public class CheckersBoard
 	}
 	
 	public GUIMovement getLastMove(){
-		if(lastMove != null && lastMove.jumper != 0){
+		if(lastMove != null){// && lastMove.jumper != 0){
 			lastMove.jumper = 0;
 			return lastMove;
 		}
@@ -130,16 +130,15 @@ public class CheckersBoard
 			board[ move.getEnd( ).getY( ) ][ move.getEnd( ).getX( ) ] =  
 					board[ move.getStart( ).getY( ) ][ move.getStart( ).getX( ) ];
 			
-			System.out.println("wtf:" + board[move.getEnd().getY()][move.getEnd().getX()].toString());
 			movePiece = Integer.parseInt(board[move.getEnd().getY()][move.getEnd().getX()].toString());
+
 			removePiece( move.getStart() );
 			//board[ move.getStart( ).getY( ) ][ move.getStart( ).getX( ) ] = null;
 		}
-
+		
 		lastMove = new GUIMovement(move, jumped, movePiece, jumpedPiece);
 		
 		if(jumped == null){
-			
 			return null;
 		}
 		

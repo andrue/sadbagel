@@ -42,7 +42,7 @@ public class Checkers extends StateBasedGame {
 
 		Globals.RESOURCES_INITIATED = true;
 	}
-
+	
     public static void main(String[] args) {
         try {
             AppGameContainer app = new AppGameContainer(new Checkers());

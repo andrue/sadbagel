@@ -264,8 +264,9 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				
 		//TODO: Andy will make pieces able to move/jump using magic
 		//movement.render(arg0, arg2);
-		if(pieceMovement != null && pieceMovement.isActivated())
+		if(pieceMovement != null && pieceMovement.isActivated()){
 			pieceMovement.render(container, g);
+		}
 		
 		
 		//Render Surrender Button
@@ -289,6 +290,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 		//NewGame Prompt
 		newGameBox.render(container, g);
+		
+		g.setColor(Color.white);
+		String temp =  "";
+		temp += totalTurns;
+		g.drawString(temp, 110, 200);
 		
 	}
 
@@ -326,13 +332,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			}
 			while( !possibleMoves.contains(move) );
 			
-			
 			//makes move and promotes pieces
 			jumpFrom = backendBoard.move( move );
 			backendBoard.promote();
 			
-			possibleMoves = backendBoard.getJumps( jumpFrom,turn );
-			
+			possibleMoves = backendBoard.getJumps( jumpFrom,turn );			
 			
 			//if the last move was a jump and has another jump, allow the player to make the jump
 			while( !possibleMoves.isEmpty() ){
@@ -363,6 +367,9 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			if(totalTurns < 105){
 				System.out.println( backendBoard );
 				
+				lastMove = backendBoard.getLastMove();
+				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
+				
 				//Update GUIBoard stupidly
 				String tempBoard = backendBoard.toGUI();
 				for(int i=0; i < 8; i++){
@@ -373,26 +380,20 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 					}				
 				}
 				
-				System.out.println(tempBoard);
-				
-				//TODO: GUI Movement
-				lastMove = backendBoard.getLastMove();
-				
 			}
 			
 		}
 		
+		//Piece Movement Animation
 		if(lastMove != null){
-			//Setup Piece Animation
-			//Remove piece from GUIBoard
-			guiBoard[7-lastMove.getMove().getEnd().getY()][7-lastMove.getMove().getEnd().getX()] = 0;
+			if(lastMove.getJumper() == 0)
+				lastMove.setJumper(guiBoard[7-lastMove.getMove().getEnd().getY()][7-lastMove.getMove().getEnd().getX()]);
 			
+			guiBoard[7-lastMove.getMove().getEnd().getY()][7-lastMove.getMove().getEnd().getX()] = 0; //Blank out			
 			pieceMovement = new PieceAnimation(lastMove);
 			pieceMovement.toggle();
-			lastMove = null;			
-		}
-		
-		
+			lastMove = null;
+		}		
 	}
 
 	@Override

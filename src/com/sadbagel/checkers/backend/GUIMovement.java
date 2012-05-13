@@ -6,6 +6,9 @@ public class GUIMovement {
 	Move move = null;
 	Coordinate jumped = null;
 	
+	boolean canUse = true;
+	
+	
 	GUIMovement(Move move, Coordinate jumped, int jumper, int jumpee){
 		this.jumper = jumper;
 		this.jumpee = jumpee;
@@ -22,6 +25,14 @@ public class GUIMovement {
 		return jumpee;
 	}
 	
+	public void setJumper(int x){
+		jumper = x;
+	}
+	
+	public void setJumpee(int x){
+		jumpee = x;
+	}
+	
 	public Move getMove(){
 		return move;
 	}
@@ -29,5 +40,16 @@ public class GUIMovement {
 	public Coordinate getCoordinate(){
 		return jumped;
 	}
-
+	
+	public boolean status(){
+		return canUse;
+	}
+	
+	public void activate(){
+		canUse = true;
+	}
+	
+	public void deactivate(){
+		canUse = false;
+	}
 }
