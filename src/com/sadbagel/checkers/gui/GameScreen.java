@@ -97,6 +97,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	boolean playerOneAI = true;
 	boolean playerTwoAI = true;
 	Integer[][] guiBoard;
+	int winner = 0;
 	
 	//Animating Piece Movement
 	ArrayList<GUIMovement> moveList = new ArrayList<GUIMovement>();
@@ -116,17 +117,15 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		this.container = container;
-		
 		background = new Image("data/images/bg3.jpg");
-		
 		redPiece = ResourceManager.getImage("red");
-		blackPiece = ResourceManager.getImage("black");
 		redKing = ResourceManager.getImage("redking");
+		blackPiece = ResourceManager.getImage("black");
 		blackKing = ResourceManager.getImage("blackking");
-		blackSpace = ResourceManager.getImage("blackspace");
 		whiteSpace = ResourceManager.getImage("whitespace");
+		blackSpace = ResourceManager.getImage("blackspace");		
 		
-		optionsImage = ResourceManager.getImage("options");
+		//TODO: optionsImage = ResourceManager.getImage("options");
 		
 		//Init Board
 		for(int i=0;i<8;i++)
@@ -142,7 +141,6 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 							64);
 				board[i][j].addListener(new SquareListener(i,j,this));
 			}
-			
 		}
 		
 		//Setup Options and Overlays
@@ -172,13 +170,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		surrenderBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
 		newGameBox.okayButton = new MouseOverArea(container, ResourceManager.getImage("okay"), 125, 405, 150, 25, this);
 		newGameBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
-		
 		//End Prompt Boxes
 		
 		//Setup Menu
 		//TODO: Change Start Game -> New Game image		
 		menu = new Menu(265,320, 5);
-		this.container = container;//Ryan: changed menus.areas[i] = bleh --> menus.setArea(i, object) so that we can add listeners
+		this.container = container;
 		for (int i=0;i<5;i++) {
 			if( i == Menu.NEWGAME){
 				menu.setArea(i, new MouseOverArea(this.container, ResourceManager.getImage("startgame"), menu.x,  menu.y + (i*50), 270, 42, this));				
@@ -199,12 +196,20 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			menu.areas[i].setMouseOverColor(new Color(1,1,1,0.9f));
 		}
 		
-		//Turn off Menu
-		menu.toggle();
+		//Reset for new game
+		reset();
 		
+		//Music Options
+		backgroundMusic = ResourceManager.getMusic("normal");
+		backgroundMusic.loop();
+	}
+
+	private void reset() {
+		//Turn off Menu if activated
+		if(menu.isActivated())
+			menu.toggle();
 		
 		//Checkers Board
-		//TODO: Code this mother
 		backendBoard = new CheckersBoard();
 		turn = 1; //Player 1
 		AI = new CheckersAI(backendBoard);
@@ -215,9 +220,25 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			for(int j=0;j<8;j++)
 				guiBoard[i][j] = 0;
 		
-		//Music Options
-		backgroundMusic = ResourceManager.getMusic("normal");
-		backgroundMusic.loop();
+		//Reset Game Variables
+		gameOver = false;
+		totalTurns = 0;
+		possibleMoves = null;
+		move = null;
+		jumpFrom = null;
+		playerOneAI = false;
+		playerTwoAI = false;
+		//playerOneAI = true;
+		//playerTwoAI = true;
+		winner = 0;
+		
+		lastMove = null;
+		pieceMovement = null;
+		
+		//Reset Player Movement
+		playerOneMove.clear();
+		playerTwoMove.clear();
+		
 	}
 
 	@Override
@@ -294,7 +315,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		newGameBox.render(container, g);
 		
 		g.setColor(Color.white);
-		String temp =  "";
+		String temp =  "Turn: ";
 		temp += totalTurns;
 		g.drawString(temp, 700, 200);
 		
@@ -325,7 +346,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 		//Check if the game wants to exit
 		if(menu.shouldExit){
-			container.exit();	
+			container.exit();
 		}
 			
 		//Check if menu needs to be toggled
@@ -338,7 +359,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		possibleMoves = backendBoard.getPossibleMoves(turn); //Get Possible Moves for Current Player
 		
 		//Player vs AI
-		if(possibleMoves.isEmpty() || gameOver){
+		if(possibleMoves.isEmpty() || gameOver || winner > 0){
 			gameOver = true;
 		}
 		//Only accept moves when not animating
@@ -355,8 +376,30 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				
 				//Check for Consecutive Jumping
 				possibleMoves = backendBoard.getJumps(jumpFrom, turn);
+				
 			}
-			else{
+			else if(turn == 2 && !playerTwoAI){
+				//Player 2 is Human
+				if(playerTwoMove.size() == 2){
+					//Player has a possible move
+					Move temp = new Move(playerTwoMove.get(0),playerTwoMove.get(1));
+					if(possibleMoves.contains(temp)){
+						//Valid Move
+						//makes move and promotes pieces
+						jumpFrom = backendBoard.move(temp);
+						backendBoard.promote();
+						
+						//Check for Consecutive-Jumping
+						possibleMoves = backendBoard.getJumps(jumpFrom, turn);						
+						playerTwoMove.clear();
+					}
+					else{
+						//Not Valid Move
+						playerTwoMove.clear();
+					}
+				}
+			}
+			else if(turn == 1 && !playerOneAI){
 				if(playerOneMove.size() == 2){
 					//Player has a possible move
 					Move temp = new Move(playerOneMove.get(0),playerOneMove.get(1));
@@ -367,8 +410,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 						backendBoard.promote();
 						
 						//Check for Consecutive-Jumping
-						possibleMoves = backendBoard.getJumps(jumpFrom, turn);
-						
+						possibleMoves = backendBoard.getJumps(jumpFrom, turn);						
 						playerOneMove.clear();
 					}
 					else{
@@ -410,12 +452,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			pieceMovement = new PieceAnimation(lastMove);
 			pieceMovement.toggle();
 			lastMove = null;
-			
-			if(moveList.size() > 0){
-				moveList.remove(0);
-			}
 		}
-		else if(gameOver && lastMove == null){
+		else if(gameOver && lastMove == null && !pieceMovement.isActivated()){
 			//Show Final Board
 			String tempBoard = backendBoard.toGUI();
 			for(int i=0; i < 8; i++){
@@ -427,11 +465,15 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			}
 			
 			//Determine Winner
-			if(turn%2 == 0){
-				System.out.println("Player 1 was the winner...");
-			}
-			else{
-				System.out.println("Player 2 was the winner...");
+			if(winner < 1){
+				if(turn%2 == 0){
+					winner = 1;
+					System.out.println("Player 1 was the winner...");
+				}
+				else{
+					winner = 2;
+					System.out.println("Player 2 was the winner...");
+				}				
 			}
 			
 		}
@@ -442,7 +484,6 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Return GameState ID
 		return stateID;
 	}
-	
 	
 	public boolean validSquare(int x, int y){
 		if(y%2 == 0){
@@ -473,8 +514,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	 *   Convoluted process to reach this method enables the board to be rendered differently while leaving this method the same.
 	 */
 	public void squareClicked(int x, int y) {
-		System.out.println("On the board, " + x + ", " + y + " has been clicked.");
-		if(turn == 1){
+		if(turn == 1 && !playerOneAI){
 			if(playerOneMove.size() < 2){
 				//Check if valid square, clear move if not.
 				if(validSquare(x,y)){
@@ -502,9 +542,32 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			}
 		}
 		else if(turn == 2 && !playerTwoAI){
-			
-		}
-		
+			if(playerTwoMove.size() < 2){
+				//Check if valid square, clear move if not.
+				if(validSquare(x,y)){
+					//Check if player owns piece
+					int piece = guiBoard[y][x];
+					if(playerTwoMove.size() == 0){
+						if(piece == B || piece == BK){
+							playerTwoMove.add(new Coordinate(7-x,7-y));
+							System.out.println("Coord: " + playerTwoMove.get(playerTwoMove.size()-1).getX() + " " + playerTwoMove.get(playerTwoMove.size()-1).getY());
+						}
+					}
+					else{
+						playerTwoMove.add(new Coordinate(7-x,7-y));
+						System.out.println("Coord: " + playerTwoMove.get(playerTwoMove.size()-1).getX() + " " + playerTwoMove.get(playerTwoMove.size()-1).getY());
+					}
+				}
+				else{
+					//Clear Move if not Valid
+					playerTwoMove.clear();
+				}
+			}
+			else{
+				//Shouldn't get this high, just a safety net.
+				playerTwoMove.clear();
+			}
+		}		
 	}
 	
 	//Was lazy, so added the options menu button directly to GameScreen :D
@@ -574,12 +637,14 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 	}
 	
-	//Was gonna have a listener in each square, have that activate the GameScreen so it can handle what's up
+	/**
+	 *This private class handles all the interactions for the GameBoard.
+	 */
 	private class SquareListener implements ComponentListener
 	{
 		private int x;
 		private int y;
-		private GameScreen game;//Yeah, it's kinda redundant. Feel free to come up with a better solution; this is only to call GameScreen's componentActivated anyways.
+		private GameScreen game;
 		public SquareListener(int x, int y, GameScreen game)
 		{
 			this.x = x;
@@ -589,10 +654,6 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 
 		@Override
 		public void componentActivated(AbstractComponent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("SquareListener at board x"+x+" y"+y+" activated.");
-			//Gamescreen.activate;//Notify GameScreen that this square has been clicked, and let it handle that.
-			//Only accept mouse clicks when Menu is not activated
 			if(!menu.isActivated() && !surrenderBox.isActivated())
 				game.squareClicked(x,y);
 		}
