@@ -83,8 +83,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Prompt Boxes
 	PromptBox surrenderBox;
 	PromptBox newGameBox;
-	PromptBox quitGameBox;
-	
+	PromptBox quitGameBox;	
 	
 	//Checkers Game and Board Objects
 	CheckersBoard backendBoard;
@@ -102,6 +101,10 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Animating Piece Movement
 	GUIMovement lastMove = null;
 	PieceAnimation pieceMovement = null;
+	
+	//Player Movement
+	ArrayList<Coordinate> playerOneMove = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> playerTwoMove = new ArrayList<Coordinate>();
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg)
@@ -153,7 +156,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				"Are you sure you want to lose?!\n" +
 				"ARE YOU!? What are you, some big loser?\n\n" +
 				"Well, just choose 'OKAY' if you want to give up and lose.\n" +
-				"Otherwise, choose 'CANCEL' if you want to try to be a winner!");//TODO: Make better prompt boxes...
+				"Otherwise, choose 'CANCEL' if you want to try to be a winner!");
 		
 		newGameBox = new PromptBox("Warning: Starting a new game when a game is currently in progress\n" +
 				"will result in a loss.\n" +
@@ -292,13 +295,32 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		g.setColor(Color.white);
 		String temp =  "";
 		temp += totalTurns;
-		g.drawString(temp, 110, 200);
+		g.drawString(temp, 700, 200);
 		
 	}
 
 	@Override
 	public void update(GameContainer arg0, StateBasedGame arg1, int arg2)
 			throws SlickException {
+		
+		//Check if Board is Blank
+		boolean isBlank = true;
+		for(int i=0;i<8;i++)
+			for(int j=0;j<8;j++)
+				if(guiBoard[j][i] > 0)
+					isBlank = false;
+		
+		if(isBlank){
+			//Update GUIBoard stupidly
+			String tempBoard = backendBoard.toGUI();
+			for(int i=0; i < 8; i++){
+				for(int j=0; j < 8; j++){
+					String x = "";
+					x += tempBoard.charAt(i*8 + j);
+					guiBoard[i][j] = Integer.parseInt(x);
+				}				
+			}
+		}
 		
 		//Check if the game wants to exit
 		if(menu.shouldExit){
@@ -314,78 +336,134 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//TODO: Add all the game logic-ness here
 		possibleMoves = backendBoard.getPossibleMoves(turn); //Get Possible Moves for Current Player
 		
+		//Player vs AI
 		if(possibleMoves.isEmpty() || gameOver){
-			gameOver = true; //No moves, game is over
+			gameOver = true;
 		}
+		//Only accept moves when not animating
 		else if(pieceMovement == null || !pieceMovement.isActivated()){
-			//gets a valid move
-			do{
-				if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
-					move = AI.playerAI(turn);
-				}
-				else{
-					//move = moveInput( possibleMoves );
-				}
-			}
-			while( !possibleMoves.contains(move) );
-			
-			//makes move and promotes pieces
-			jumpFrom = backendBoard.move(move);
-			backendBoard.promote();
-			
-			possibleMoves = backendBoard.getJumps(jumpFrom, turn);			
-			
-			//if the last move was a jump and has another jump, allow the player to make the jump
-			while( !possibleMoves.isEmpty() ){
+			//Check if AI or Player
+			if(playerTwoAI && turn == 2){
 				do{
-					if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
-						
-						move = possibleMoves.get(0);
-					}
-					else{
-						//move = moveInput( possibleMoves );
-					}
-					
+					move = AI.playerAI(turn);
 				}
 				while( !possibleMoves.contains(move) );
 				
-				//makes the multiple jump
-				jumpFrom = backendBoard.move( move );
-				backendBoard.promote();
-					
-				possibleMoves = backendBoard.getJumps( jumpFrom,turn );
-				
-			}
-			
-			turn %= 2;
-			turn++;
-			totalTurns++;
-			
-			if(totalTurns < 105){
-				System.out.println( backendBoard );
-				
-				lastMove = backendBoard.getLastMove();
-				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
-				
-				//Update GUIBoard stupidly
-				String tempBoard = backendBoard.toGUI();
-				for(int i=0; i < 8; i++){
-					for(int j=0; j < 8; j++){
-						String x = "";
-						x += tempBoard.charAt(i*8 + j);
-						guiBoard[i][j] = Integer.parseInt(x);
-					}				
-				}
+				//MoreAI Coding
 				
 			}
 			else{
-				gameOver = true;
+				if(playerOneMove.size() == 2){
+					//Player has a possible move
+					Move temp = new Move(playerOneMove.get(0),playerOneMove.get(1));
+					if(possibleMoves.contains(temp)){
+						//Valid Move
+						//makes move and promotes pieces
+						jumpFrom = backendBoard.move(temp);
+						backendBoard.promote();
+						
+						//Check for Consecutive-Jumping
+						possibleMoves = backendBoard.getPossibleMoves(turn);
+						
+						playerOneMove.clear();
+					}
+					else{
+						//Not Valid Move
+						playerOneMove.clear();
+					}
+				}
 			}
 			
+			lastMove = backendBoard.getLastMove();
+			if(lastMove != null)
+				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
+			
+			//Update GUIBoard stupidly
+			String tempBoard = backendBoard.toGUI();
+			for(int i=0; i < 8; i++){
+				for(int j=0; j < 8; j++){
+					String x = "";
+					x += tempBoard.charAt(i*8 + j);
+					guiBoard[i][j] = Integer.parseInt(x);
+				}				
+			}
+			
+			//Get Last Move
+			
 		}
+//		
+//		if(possibleMoves.isEmpty() || gameOver){
+//			gameOver = true; //No moves, game is over
+//		}
+//		else if(pieceMovement == null || !pieceMovement.isActivated()){
+//			//gets a valid move
+//			do{
+//				if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
+//					move = AI.playerAI(turn);
+//				}
+//				else{
+//					//move = moveInput( possibleMoves );
+//				}
+//			}
+//			while( !possibleMoves.contains(move) );
+//			
+//			//makes move and promotes pieces
+//			jumpFrom = backendBoard.move(move);
+//			backendBoard.promote();
+//			
+//			possibleMoves = backendBoard.getJumps(jumpFrom, turn);			
+//			
+//			//if the last move was a jump and has another jump, allow the player to make the jump
+//			while( !possibleMoves.isEmpty() ){
+//				do{
+//					if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
+//						
+//						move = possibleMoves.get(0);
+//					}
+//					else{
+//						//move = moveInput( possibleMoves );
+//					}
+//					
+//				}
+//				while( !possibleMoves.contains(move) );
+//				
+//				//makes the multiple jump
+//				jumpFrom = backendBoard.move( move );
+//				backendBoard.promote();
+//					
+//				possibleMoves = backendBoard.getJumps( jumpFrom,turn );
+//				
+//			}
+//			
+//			turn %= 2;
+//			turn++;
+//			totalTurns++;
+//			
+//			if(totalTurns < 105){
+//				System.out.println( backendBoard );
+//				
+//				lastMove = backendBoard.getLastMove();
+//				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
+//				
+//				//Update GUIBoard stupidly
+//				String tempBoard = backendBoard.toGUI();
+//				for(int i=0; i < 8; i++){
+//					for(int j=0; j < 8; j++){
+//						String x = "";
+//						x += tempBoard.charAt(i*8 + j);
+//						guiBoard[i][j] = Integer.parseInt(x);
+//					}				
+//				}
+//				
+//			}
+//			else{
+//				gameOver = true;
+//			}
+//			
+//		}
 		
-		//Piece Movement Animation
-		if(lastMove != null){
+		//Piece Movement Animation Setup
+		if(lastMove != null && !gameOver){
 			if(lastMove.getJumper() == 0)
 				lastMove.setJumper(guiBoard[7-lastMove.getMove().getEnd().getY()][7-lastMove.getMove().getEnd().getX()]);
 			
@@ -402,6 +480,26 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		return stateID;
 	}
 	
+	
+	public boolean validSquare(int x, int y){
+		if(y%2 == 0){
+			if(x%2 == 0){
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+		else{
+			if(x%2 == 1){
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+	}
+	
 	/**
 	 * squareClicked
 	 * @param x - Location of square on board
@@ -413,9 +511,39 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	 */
 	public void squareClicked(int x, int y) {
 		System.out.println("On the board, " + x + ", " + y + " has been clicked.");
+		if(turn == 1){
+			if(playerOneMove.size() < 2){
+				//Check if valid square, clear move if not.
+				if(validSquare(x,y)){
+					//Check if player owns piece
+					int piece = guiBoard[y][x];
+					if(playerOneMove.size() == 0){
+						if(piece == R || piece == RK){
+							playerOneMove.add(new Coordinate(7-x,7-y));
+							System.out.println("Coord: " + playerOneMove.get(playerOneMove.size()-1).getX() + " " + playerOneMove.get(playerOneMove.size()-1).getY());
+						}
+					}
+					else{
+						playerOneMove.add(new Coordinate(7-x,7-y));
+						System.out.println("Coord: " + playerOneMove.get(playerOneMove.size()-1).getX() + " " + playerOneMove.get(playerOneMove.size()-1).getY());
+					}
+				}
+				else{
+					//Clear Move if not Valid
+					playerOneMove.clear();
+				}
+			}
+			else{
+				//Shouldn't get this high, just a safety net.
+				playerOneMove.clear();
+			}
+		}
+		else if(turn == 2 && !playerTwoAI){
+			
+		}
+		
 	}
 	
-	//TODO: Evaluate whether this is still necessary
 	//Was lazy, so added the options menu button directly to GameScreen :D
 	//Coding Menu stuff per Screen because I can.
 	public void componentActivated(AbstractComponent source) {

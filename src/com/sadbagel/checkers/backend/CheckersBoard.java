@@ -91,8 +91,9 @@ public class CheckersBoard
 	}
 	
 	public GUIMovement getLastMove(){
-		if(lastMove != null){// && lastMove.jumper != 0){
+		if(lastMove != null && lastMove.status()){
 			lastMove.jumper = 0;
+			lastMove.deactivate();
 			return lastMove;
 		}
 		return null;
