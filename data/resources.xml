@@ -46,6 +46,8 @@
 	
 	<!-- Prompt Box -->
 	<image key="warning" file="images/prompt/warning.png"/>
+	<image key="okay" file="images/prompt/okay.png"/>
+	<image key="cancel" file="images/prompt/cancel.png"/>
 	
 
 	<!-- sheets 

@@ -4,6 +4,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.gui.MouseOverArea;
 
 public class PromptBox {
 	
@@ -11,6 +12,10 @@ public class PromptBox {
 	private String message;
 	private String typeMessage = "";
 	private int length = 0;
+	
+	
+	public MouseOverArea okayButton = null;
+	public MouseOverArea cancelButton = null;
 	
 	PromptBox(String message){
 		this.message = message;
@@ -30,6 +35,10 @@ public class PromptBox {
 			}
 			g.setColor(Color.white);
 			g.drawString(typeMessage, 110, 200);
+			
+			okayButton.render(container, g);
+			cancelButton.render(container, g);
+			
 		}
 		else{
 			length = 0;

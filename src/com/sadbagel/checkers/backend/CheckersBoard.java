@@ -10,6 +10,7 @@ public class CheckersBoard
 	private Checker board[ ][ ];
 	private final int MAX_ROWS = 8;
 	private final int MAX_COLUMNS = 8;
+	private GUIMovement lastMove;
 	
 	/**
 	 * 
@@ -89,6 +90,14 @@ public class CheckersBoard
 		}
 	}
 	
+	public GUIMovement getLastMove(){
+		if(lastMove != null && lastMove.jumper != 0){
+			lastMove.jumper = 0;
+			return lastMove;
+		}
+		return null;
+	}
+	
 	/**
 	 * 
 	 * @param move
@@ -97,6 +106,8 @@ public class CheckersBoard
 	public Coordinate move( Move move )
 	{
 		Coordinate jumped = null;
+		int jumpedPiece = 0;
+		int movePiece = 0;
 		
 		//makes sure the move is valid
 		if( isValidCoordinate( move.getStart( ) ) && 
@@ -107,7 +118,11 @@ public class CheckersBoard
 			
 			//removes jumped piece
 			if( ( jumped = getJumpped( move ) ) != null )
-			{
+			{	
+				if(board[jumped.getY()][jumped.getX()] != null){
+					jumpedPiece = Integer.parseInt(board[jumped.getY()][jumped.getX()].toString());
+				}
+				
 				removePiece(jumped);
 			}
 			
@@ -115,10 +130,14 @@ public class CheckersBoard
 			board[ move.getEnd( ).getY( ) ][ move.getEnd( ).getX( ) ] =  
 					board[ move.getStart( ).getY( ) ][ move.getStart( ).getX( ) ];
 			
+			System.out.println("wtf:" + board[move.getEnd().getY()][move.getEnd().getX()].toString());
+			movePiece = Integer.parseInt(board[move.getEnd().getY()][move.getEnd().getX()].toString());
 			removePiece( move.getStart() );
 			//board[ move.getStart( ).getY( ) ][ move.getStart( ).getX( ) ] = null;
 		}
 
+		lastMove = new GUIMovement(move, jumped, movePiece, jumpedPiece);
+		
 		if(jumped == null){
 			
 			return null;
@@ -560,6 +579,30 @@ public class CheckersBoard
 			}
 			
 			message += "\n";
+		}
+			
+		return message;
+	}
+	
+	/**
+	 * 
+	 */
+	public String toGUI(){
+		String message = "";
+		
+		for( int row = MAX_ROWS-1; row >= 0; row-- )
+		{
+			for(int column = MAX_COLUMNS-1; column >= 0; column--)
+			{				
+				if( board[row][column] == null )
+				{	
+					message += "0";
+				}
+				else
+				{
+					message += board[row][column].toString();
+				}
+			}
 		}
 			
 		return message;

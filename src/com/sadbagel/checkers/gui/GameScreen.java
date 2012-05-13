@@ -1,5 +1,7 @@
 package com.sadbagel.checkers.gui;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -11,6 +13,12 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+
+import com.sadbagel.checkers.backend.CheckersAI;
+import com.sadbagel.checkers.backend.CheckersBoard;
+import com.sadbagel.checkers.backend.Coordinate;
+import com.sadbagel.checkers.backend.GUIMovement;
+import com.sadbagel.checkers.backend.Move;
 
 public class GameScreen extends BasicGameState implements ComponentListener{
 
@@ -41,11 +49,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	Menu menu = null;
 	
 	//Piece Codes
-	final int R = 0;
-	final int RK = 1;
+	final int E = 0;
+	final int R = 1;
 	final int B = 2;
-	final int BK = 3;
-	
+	final int RK = 3;
+	final int BK = 4;
 	
 	//Board Configuration
 	MouseOverArea board[][] = new MouseOverArea[8][8];//directions are -->,VVV
@@ -71,11 +79,29 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	
 	//Surrender Button
 	MouseOverArea surrender;
-
 	
 	//Prompt Boxes
 	PromptBox surrenderBox;
 	PromptBox newGameBox;
+	PromptBox quitGameBox;
+	
+	
+	//Checkers Game and Board Objects
+	CheckersBoard backendBoard;
+	int turn;
+	boolean gameOver = false;
+	int totalTurns = 0;
+	ArrayList<Move> possibleMoves;
+	Move move = null;
+	Coordinate jumpFrom;
+	CheckersAI AI;	
+	boolean playerOneAI = true;
+	boolean playerTwoAI = true;
+	Integer[][] guiBoard;
+	
+	//Animating Piece Movement
+	GUIMovement lastMove = null;
+	PieceAnimation pieceMovement = null;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg)
@@ -91,11 +117,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		
 		redPiece = ResourceManager.getImage("red");
 		blackPiece = ResourceManager.getImage("black");
+		redKing = ResourceManager.getImage("redking");
+		blackKing = ResourceManager.getImage("blackking");
 		blackSpace = ResourceManager.getImage("blackspace");
 		whiteSpace = ResourceManager.getImage("whitespace");
 		
 		optionsImage = ResourceManager.getImage("options");
-		
 		
 		//Init Board
 		for(int i=0;i<8;i++)
@@ -119,19 +146,30 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		showStatistics = new MouseOverArea(container, ResourceManager.getImage("showStatistics"), 637, 550, 163, 29, this);
 		surrender = new MouseOverArea(container, ResourceManager.getImage("surrender"), 675, 510, 130, 29, this);
 		stat.init();
+		
+		//Prompt Boxes
 		surrenderBox = new PromptBox("Warning: Surrendering will result in a loss.\n" +
 				"\n" +
 				"Are you sure you want to lose?!\n" +
-				"ARE YOU!? What are you, some big loser?\n" +
-				"Well, just choose 'OK' if you want to give up and wish to lose.\n" +
+				"ARE YOU!? What are you, some big loser?\n\n" +
+				"Well, just choose 'OKAY' if you want to give up and lose.\n" +
 				"Otherwise, choose 'CANCEL' if you want to try to be a winner!");//TODO: Make better prompt boxes...
 		
 		newGameBox = new PromptBox("Warning: Starting a new game when a game is currently in progress\n" +
 				"will result in a loss.\n" +
 				"\n" +
-				"Are you sure you want to continue and lose?\n" +
-				"Just click 'OK' to lose and start a new game,\n" +
+				"Are you sure you want to continue and lose?\n\n" +
+				"Just click 'OKAY' to lose and start a new game,\n" +
 				"or click 'CANCEL' if you want to try to win.");
+		
+		//Prompt Boxes
+		//TODO: Create method for PromptBox that does this automatically...
+		surrenderBox.okayButton = new MouseOverArea(container, ResourceManager.getImage("okay"), 125, 405, 150, 25, this);
+		surrenderBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
+		newGameBox.okayButton = new MouseOverArea(container, ResourceManager.getImage("okay"), 125, 405, 150, 25, this);
+		newGameBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
+		
+		//End Prompt Boxes
 		
 		//Setup Menu
 		//TODO: Change Start Game -> New Game image		
@@ -160,6 +198,20 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Turn off Menu
 		menu.toggle();
 		
+		
+		//Checkers Board
+		//TODO: Code this mother
+		backendBoard = new CheckersBoard();
+		turn = 1; //Player 1
+		AI = new CheckersAI(backendBoard);
+		guiBoard = new Integer[8][8];
+		
+		//Blank GUIBoard
+		for(int i=0;i<8;i++)
+			for(int j=0;j<8;j++)
+				guiBoard[i][j] = 0;
+		
+		//Music Options
 		backgroundMusic = ResourceManager.getMusic("normal");
 		backgroundMusic.loop();
 	}
@@ -181,10 +233,39 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//TODO: Draw the Pieces on top of the game board
 		//Game Board tiles will be 64 x 64, pieces will be 48x48
 		//So there will be a trim of 6px around the pieces on all sides
+		int offsetX = 3;
+		int offsetY = 3;
+		int padding = 6;
+		
+		for(int i=0; i < 8; i++){
+			for(int j=0; j < 8; j++){
+				if(guiBoard[i][j] == R){
+					//Draw Red
+					redPiece.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+				}
+				else if(guiBoard[i][j] == B){
+					//Draw Black
+					blackPiece.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+				}
+				else if(guiBoard[i][j] == RK){
+					//Draw RedKing
+					redKing.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+				}
+				else if(guiBoard[i][j] == BK){
+					//Draw BlackKing
+					blackKing.draw(boardX + (j*64) + 9, boardY + (i*64) + 9);
+				}
+				else if(guiBoard[i][j] == E){
+					//do not draw
+				}
+			}
+		}
 		
 				
 		//TODO: Andy will make pieces able to move/jump using magic
 		//movement.render(arg0, arg2);
+		if(pieceMovement != null && pieceMovement.isActivated())
+			pieceMovement.render(container, g);
 		
 		
 		//Render Surrender Button
@@ -227,6 +308,90 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		//TODO: Add all the game logic-ness here
+		possibleMoves = backendBoard.getPossibleMoves(turn); //Get Possible Moves for Current Player
+		
+		if(possibleMoves.isEmpty()){
+			gameOver = true; //No moves, game is over
+		}
+		else if(pieceMovement == null || !pieceMovement.isActivated()){
+			//gets a valid move
+			do{
+				if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
+					move = AI.playerAI(turn);
+				}
+				else{
+				//move = moveInput( possibleMoves );
+				}
+				
+			}
+			while( !possibleMoves.contains(move) );
+			
+			
+			//makes move and promotes pieces
+			jumpFrom = backendBoard.move( move );
+			backendBoard.promote();
+			
+			possibleMoves = backendBoard.getJumps( jumpFrom,turn );
+			
+			
+			//if the last move was a jump and has another jump, allow the player to make the jump
+			while( !possibleMoves.isEmpty() ){
+				do{
+					if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
+						
+						move = possibleMoves.get(0);
+					}
+					else{
+						//move = moveInput( possibleMoves );
+					}
+					
+				}
+				while( !possibleMoves.contains(move) );
+				
+				//makes the multiple jump
+				jumpFrom = backendBoard.move( move );
+				backendBoard.promote();
+					
+				possibleMoves = backendBoard.getJumps( jumpFrom,turn );
+				
+			}
+			
+			turn %= 2;
+			turn++;
+			totalTurns++;
+			
+			if(totalTurns < 105){
+				System.out.println( backendBoard );
+				
+				//Update GUIBoard stupidly
+				String tempBoard = backendBoard.toGUI();
+				for(int i=0; i < 8; i++){
+					for(int j=0; j < 8; j++){
+						String x = "";
+						x += tempBoard.charAt(i*8 + j);
+						guiBoard[i][j] = Integer.parseInt(x);
+					}				
+				}
+				
+				System.out.println(tempBoard);
+				
+				//TODO: GUI Movement
+				lastMove = backendBoard.getLastMove();
+				
+			}
+			
+		}
+		
+		if(lastMove != null){
+			//Setup Piece Animation
+			//Remove piece from GUIBoard
+			guiBoard[7-lastMove.getMove().getEnd().getY()][7-lastMove.getMove().getEnd().getX()] = 0;
+			
+			pieceMovement = new PieceAnimation(lastMove);
+			pieceMovement.toggle();
+			lastMove = null;			
+		}
+		
 		
 	}
 
@@ -254,6 +419,25 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Was lazy, so added the options menu button directly to GameScreen :D
 	//Coding Menu stuff per Screen because I can.
 	public void componentActivated(AbstractComponent source) {
+		
+		//Prompt Boxes
+		if(surrenderBox.isActivated()){
+			if(source == surrenderBox.cancelButton){
+				surrenderBox.toggle();
+			}
+			else if(source == surrenderBox.okayButton){
+				//Logic for Surrendering
+			}
+		}
+		
+		if(newGameBox.isActivated()){
+			if(source == newGameBox.cancelButton){
+				newGameBox.toggle();
+			}
+			else if(source == newGameBox.okayButton){
+				//Logic for starting a New Game and losing
+			}
+		}
 		
 		//Surrender
 		if(source == surrender && !menu.isActivated()){
