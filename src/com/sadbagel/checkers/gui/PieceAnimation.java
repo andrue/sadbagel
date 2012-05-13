@@ -18,7 +18,7 @@ public class PieceAnimation {
 	
 	float x, y;
 	float endX, endY;
-	float speed = 10f;
+	float speed = 7f;
 	int jX, jY;
 	
 	//NW, NE, SW, SE: 0, 1, 2, 3

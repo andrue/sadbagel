@@ -99,6 +99,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	Integer[][] guiBoard;
 	
 	//Animating Piece Movement
+	ArrayList<GUIMovement> moveList = new ArrayList<GUIMovement>();
 	GUIMovement lastMove = null;
 	PieceAnimation pieceMovement = null;
 	
@@ -349,8 +350,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				}
 				while( !possibleMoves.contains(move) );
 				
-				//MoreAI Coding
+				jumpFrom = backendBoard.move(move);
+				backendBoard.promote();
 				
+				//Check for Consecutive Jumping
+				possibleMoves = backendBoard.getJumps(jumpFrom, turn);
 			}
 			else{
 				if(playerOneMove.size() == 2){
@@ -363,7 +367,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 						backendBoard.promote();
 						
 						//Check for Consecutive-Jumping
-						possibleMoves = backendBoard.getPossibleMoves(turn);
+						possibleMoves = backendBoard.getJumps(jumpFrom, turn);
 						
 						playerOneMove.clear();
 					}
@@ -374,7 +378,15 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				}
 			}
 			
-			lastMove = backendBoard.getLastMove();
+			//Player has no Multi-Jump, increment turn
+			if(possibleMoves.isEmpty()){
+				turn %= 2;
+				turn++;
+				totalTurns++;
+			}
+			
+			//Player Animation
+			lastMove = (!gameOver ? backendBoard.getLastMove() : null);
 			if(lastMove != null)
 				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
 			
@@ -387,80 +399,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 					guiBoard[i][j] = Integer.parseInt(x);
 				}				
 			}
-			
-			//Get Last Move
-			
 		}
-//		
-//		if(possibleMoves.isEmpty() || gameOver){
-//			gameOver = true; //No moves, game is over
-//		}
-//		else if(pieceMovement == null || !pieceMovement.isActivated()){
-//			//gets a valid move
-//			do{
-//				if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
-//					move = AI.playerAI(turn);
-//				}
-//				else{
-//					//move = moveInput( possibleMoves );
-//				}
-//			}
-//			while( !possibleMoves.contains(move) );
-//			
-//			//makes move and promotes pieces
-//			jumpFrom = backendBoard.move(move);
-//			backendBoard.promote();
-//			
-//			possibleMoves = backendBoard.getJumps(jumpFrom, turn);			
-//			
-//			//if the last move was a jump and has another jump, allow the player to make the jump
-//			while( !possibleMoves.isEmpty() ){
-//				do{
-//					if( (playerOneAI && turn == 1) || (playerTwoAI && turn == 2) ){
-//						
-//						move = possibleMoves.get(0);
-//					}
-//					else{
-//						//move = moveInput( possibleMoves );
-//					}
-//					
-//				}
-//				while( !possibleMoves.contains(move) );
-//				
-//				//makes the multiple jump
-//				jumpFrom = backendBoard.move( move );
-//				backendBoard.promote();
-//					
-//				possibleMoves = backendBoard.getJumps( jumpFrom,turn );
-//				
-//			}
-//			
-//			turn %= 2;
-//			turn++;
-//			totalTurns++;
-//			
-//			if(totalTurns < 105){
-//				System.out.println( backendBoard );
-//				
-//				lastMove = backendBoard.getLastMove();
-//				lastMove.setJumper(guiBoard[7-lastMove.getMove().getStart().getY()][7-lastMove.getMove().getStart().getX()]);
-//				
-//				//Update GUIBoard stupidly
-//				String tempBoard = backendBoard.toGUI();
-//				for(int i=0; i < 8; i++){
-//					for(int j=0; j < 8; j++){
-//						String x = "";
-//						x += tempBoard.charAt(i*8 + j);
-//						guiBoard[i][j] = Integer.parseInt(x);
-//					}				
-//				}
-//				
-//			}
-//			else{
-//				gameOver = true;
-//			}
-//			
-//		}
 		
 		//Piece Movement Animation Setup
 		if(lastMove != null && !gameOver){
@@ -471,7 +410,31 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			pieceMovement = new PieceAnimation(lastMove);
 			pieceMovement.toggle();
 			lastMove = null;
-		}		
+			
+			if(moveList.size() > 0){
+				moveList.remove(0);
+			}
+		}
+		else if(gameOver && lastMove == null){
+			//Show Final Board
+			String tempBoard = backendBoard.toGUI();
+			for(int i=0; i < 8; i++){
+				for(int j=0; j < 8; j++){
+					String x = "";
+					x += tempBoard.charAt(i*8 + j);
+					guiBoard[i][j] = Integer.parseInt(x);
+				}				
+			}
+			
+			//Determine Winner
+			if(turn%2 == 0){
+				System.out.println("Player 1 was the winner...");
+			}
+			else{
+				System.out.println("Player 2 was the winner...");
+			}
+			
+		}
 	}
 
 	@Override
