@@ -15,6 +15,7 @@ import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.sadbagel.checkers.backend.CheckerStats;
 import com.sadbagel.checkers.backend.CheckersAI;
 import com.sadbagel.checkers.backend.CheckersBoard;
 import com.sadbagel.checkers.backend.Coordinate;
@@ -593,6 +594,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 					winner = 2;
 				}
 				menu.toggle(); //Show menu because the game has ended
+				CheckerStats.save(turn, true/*yes*/, playerTwoAI, totalTurns );
+				//bleh Globals.GAME.getCurrentStateID()==Globals.GAME.TITLESCREENSTATE
 			}
 
 			//Show winning screen
@@ -606,6 +609,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 
 		}
 	}
+
 
 	@Override
 	public int getID() {
