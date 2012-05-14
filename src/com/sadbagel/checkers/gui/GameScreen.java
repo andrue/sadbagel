@@ -227,6 +227,12 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Turn off Menu if activated
 		if(menu.isActivated())
 			menu.toggle();
+		
+		//Check BGM
+		if(backgroundMusic == ResourceManager.getMusic("kinged")){
+			backgroundMusic = ResourceManager.getMusic("normal");
+			backgroundMusic.loop();
+		}
 
 		//Checkers Board
 		backendBoard = new CheckersBoard();
@@ -384,8 +390,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			//end Prediction
 		}
 
-		//TODO: Andy will make pieces able to move/jump using magic
-		//movement.render(arg0, arg2);
+		//Piece Movements
 		if(pieceMovement != null && pieceMovement.isActivated()){
 			pieceMovement.render(container, g);
 		}
@@ -406,7 +411,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Render Surrender Button
 		surrender.render(container, g);
 
-		//Options Menu Stuff
+		//Options Menu
 		if(menu.isActivated()){
 			g.setColor(new Color(0,0,0,200));
 			g.fillRect(0, 0, 800, 600);
@@ -578,6 +583,10 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			//Determine Winner
 			if(winner < 1){
 				if(turn%2 == 0){
+					//Victory Music
+					backgroundMusic = ResourceManager.getMusic("kinged");
+					backgroundMusic.loop();
+					
 					winner = 1;
 				}
 				else{
