@@ -138,7 +138,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		this.container = container;
 
 		//Setup Images
-		background = ResourceManager.getImage("bg3");
+		background = new Image("data/images/bg3.jpg");
 		infoBox = ResourceManager.getImage("infoBox");
 		redPiece = ResourceManager.getImage("red");
 		redKing = ResourceManager.getImage("redking");
@@ -619,7 +619,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			pieceMovement.toggle();
 			lastMove = null;
 		}
-		else if(gameOver && lastMove == null && !pieceMovement.isActivated()){
+		else if(gameOver && lastMove == null && pieceMovement != null && !pieceMovement.isActivated()){
 			//Show Final Board
 			String tempBoard = backendBoard.toGUI();
 			for(int i=0; i < 8; i++){
@@ -765,8 +765,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				//Record Loss
 				CheckerStats.save(turn-1, true/*yes*/, playerTwoAI, totalTurns);
 				gameOver = true;
-				surrenderBox.toggle();
 				menu.toggle();
+				surrenderBox.toggle();
 			}
 		}
 		
