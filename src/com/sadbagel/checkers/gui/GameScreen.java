@@ -802,6 +802,61 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 
 	}
 
+	public String toFileString(){
+		
+		String s = backendBoard.toFileString();
+		
+		if( playerTwoAI ){
+			s += "1";
+		} else{
+			s += "0";
+		}
+		
+		s += totalTurns;
+		
+		return s;		 
+	}
+	
+	public boolean setState( String state ){
+		
+		if( state.length() < 34){
+			
+			return false;
+		}
+		
+		if( backendBoard.setState( state.substring( 0, 32) ) ){
+			
+			if( state.charAt( 32 ) != '0' && state.charAt( 32 ) != '1'){
+				
+				return false;
+			}
+			
+			for(int i = 33; i < state.length(); i++){
+				
+				if( !Character.isDigit( state.charAt( i ) ) ){
+					
+					return false;
+				}
+			}
+			
+			if( state.charAt( 32 ) == '0'){
+				
+				playerTwoAI = false;
+			}
+			else{
+				
+				playerTwoAI = true;
+			}
+			
+			totalTurns = Integer.parseInt( state.substring( 33 ) );
+			
+			return true;
+		}
+		
+		return false;
+		
+	}
+	
 	/**
 	 *This private class handles all the interactions for the GameBoard.
 	 */
@@ -824,5 +879,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 
 	}
+	
+	
 
 }

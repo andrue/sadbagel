@@ -942,7 +942,7 @@ public class CheckersBoard
 	
 	public boolean setState( String state){
 		
-		if( state.length() < 33 ){
+		if( state.length() != 32 ){
 			
 			return false;
 		}
@@ -956,14 +956,6 @@ public class CheckersBoard
 			}
 		}
 		
-		
-		for(int i = 32; i < state.length(); i++){
-			
-			if( !Character.isDigit( state.charAt( i ) ) ){
-				
-				return false;
-			}
-		}
 		
 		int count = 0;
 		
@@ -1001,9 +993,6 @@ public class CheckersBoard
 				count++;				
 			}
 		}
-		
-		
-		moveNumber = Integer.parseInt( state.substring( 32 ) );
 		
 		return true;
 		
