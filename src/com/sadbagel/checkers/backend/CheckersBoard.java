@@ -305,11 +305,11 @@ public class CheckersBoard
 	}
 	
 	/**
-	 * 
-	 * @param turn
-	 * @return
+	 * getJumps
+	 * @param player
+	 * @return List of all jumps for the given player.
 	 */
-	public ArrayList< Move > getJumps( int turn )
+	public ArrayList< Move > getJumps( int player )
 	{	
 		ArrayList< Move > jumps = new ArrayList< Move >( );
 		
@@ -322,13 +322,13 @@ public class CheckersBoard
 				Coordinate current = new Coordinate( row,  column );
 				
 				//checks for player 1 jumps
-				if( turn == 1 )
+				if( player == 1 )
 				{	
 					jumps.addAll( playerOneJump( current ) );	
 				}
 				
 				//Checks for player 2 jumps
-				if( turn == 2 )
+				if( player == 2 )
 				{	
 					jumps.addAll( playerTwoJump( current ) );	
 				}
@@ -339,9 +339,9 @@ public class CheckersBoard
 	}
 	
 	/**
-	 * 
+	 * playerOneMove
 	 * @param current
-	 * @return
+	 * @return ArrayList<Move> Potential moves for player one, from this square.
 	 */
 	public ArrayList< Move > playerOneMove( Coordinate current )
 	{
