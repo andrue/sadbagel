@@ -190,7 +190,7 @@ public class CheckerStats {
 		}
 	}
 
-	public void calcMissingValues()
+	public static void calcMissingValues()
 	{
 		compTotalGames = compWins + compLosses;
 		compWinRate = compWins / compTotalGames;
@@ -200,14 +200,32 @@ public class CheckerStats {
 		humLossRate = humLosses / humTotalGames;
 	}
 
+	/**
+	 * poor man's static toString
+	 */
+	public static String text()
+	{
+		String result = "";
+
+		refresh();
+
+		calcMissingValues();
+		result += "Player: " /*+ this.name*/ + "\n";
+		result += "vs COMPUTER: \n";
+		result += "Games: " + compTotalGames + "\n";
+		result += "Win %: " + compWinRate + "\n";
+		result += "Loss %: " + compLossRate + "\n";
+		result += "vs HUMAN: \n";
+		result += "Games: "+ humTotalGames + "\n";
+		result += "Win %: " + humWinRate + "\n";
+		result += "Loss %: " + humLossRate + "\n";
+
+		return result;
+	}
+
 	public String toString(){
 		String result = "";
-		try {
-			initFromFile(new FileReader(fileName));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		refresh();
 		calcMissingValues();
 		result += "Player: " /*+ this.name*/ + "\n";
 		result += "vs COMPUTER: \n";
@@ -220,5 +238,15 @@ public class CheckerStats {
 		result += "Loss %: " + this.humLossRate + "\n";
 
 		return result;
+	}
+
+	public static void refresh() {
+		try {
+			initFromFile(new FileReader(fileName));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
