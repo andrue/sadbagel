@@ -813,17 +813,17 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		s += totalTurns;
-		
+
 		return s;		 
 	}
 	
 	public boolean setState( String state ){
 		
 		if( state.length() < 34){
-			
+
 			return false;
 		}
-		
+
 		if( backendBoard.setState( state.substring( 0, 32) ) ){
 			
 			if( state.charAt( 32 ) != '0' && state.charAt( 32 ) != '1'){

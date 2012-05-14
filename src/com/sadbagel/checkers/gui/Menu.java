@@ -1,5 +1,17 @@
 package com.sadbagel.checkers.gui;
 
+import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -9,6 +21,9 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.thingle.spi.ThingleException;
+import org.newdawn.slick.thingle.util.FileChooser;
+import org.newdawn.slick.thingle.util.FileChooserListener;
 
 public class Menu{
 
@@ -111,20 +126,93 @@ public class Menu{
 				}
 				break; 
 			
-			case SAVEGAME: 				
-			if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+			case SAVEGAME: 			
+				
+			//if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
+			if(Globals.GAME.getCurrentStateID() == Globals.GAME.TITLESCREENSTATE){
 				//Can't exactly save during the title screen.
+				
 			}
 			else{
 				//Logic for saving the current game.
+				
+				File savesDirectory = new File("./saves");
+				
+				 if( savesDirectory.list() == null ){
+				 
+				 	savesDirectory.mkdir();
+				 }
+				
+				 Calendar time = Calendar.getInstance();
+				 
+					FileWriter save = null;
+					
+					
+					File file =  new File("./saves/LastGame.checkers" );
+					
+					
+					try {
+						file.createNewFile();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					
+					try {
+						save = new FileWriter( file );
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+				 
+				try {
+					save.write( ( (GameScreen) Globals.GAME.getCurrentState() ).toFileString() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				try {
+					save.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}break;
 			
 			case LOADGAME: 
-				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){
-					//Load game from Title Screen
+				if(Globals.GAME.getCurrentStateID() == Globals.GAME.TITLESCREENSTATE){
+					
+						
 				}
 				else{
 					//Load game from Game Screen
+					
+					File savesDirectory = new File("./saves");
+					
+					 if( savesDirectory.list() == null ){
+					 
+					 	savesDirectory.mkdir();
+					 }
+					
+					File file =  new File("./saves/LastGame.checkers" );
+
+					if( file.exists() ){
+						
+						Scanner scanner = null;
+						
+						try {
+							scanner = new Scanner( file );
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						System.out.println( ( (GameScreen) Globals.GAME.getCurrentState() ).setState( scanner.nextLine() ) );
+					}
+					
 				}
 				break;
 			case STATISTICS: 

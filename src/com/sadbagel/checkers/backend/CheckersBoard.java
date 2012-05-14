@@ -735,16 +735,16 @@ public class CheckersBoard
 		double score = 0;
 		
 			//calcs score for player 1
-			score += Math.pow( 1.7, getJumps( 1 ).size() );
-			score += Math.pow( 1.35, getMoves( 1 ).size() );
-			score += Math.pow( 1.15, numPieces( 1 ) );
-			score += Math.pow( 5, numKings( 1 ) );
+			score += Math.pow( 1.25, getJumps( 1 ).size() );
+			score += Math.pow( 1.5, getMoves( 1 ).size() );
+			score += Math.pow( 1.5, numPieces( 1 ) );
+			score += Math.pow( 1.4, numKings( 1 ) );
 			
 			//calc score for player 2
-			score -= Math.pow( 1.7, getJumps( 2 ).size() );
-			score -= Math.pow( 1.35, getMoves( 2 ).size() );
-			score -= Math.pow( 1.15, numPieces( 2 ) );
-			score -= Math.pow( 5, numKings( 2 ) );
+			score -= Math.pow( 1.25, getJumps( 2 ).size() );
+			score -= Math.pow( 1.5, getMoves( 2 ).size() );
+			score -= Math.pow( 1.5, numPieces( 2 ) );
+			score -= Math.pow( 1.4, numKings( 2 ) );
 		
 			if(player == 1){
 				
