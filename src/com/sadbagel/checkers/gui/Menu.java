@@ -51,6 +51,8 @@ public class Menu{
 	
 	//Activated (used for rendering on gamescreen/deactivating other components)
 	private int activated = 1;
+	
+	public int haltButtons = 1;
 
 	public Menu(int x, int y, int buttons){
 		NUMBUTTONS = buttons;
@@ -136,60 +138,7 @@ public class Menu{
 			else{
 				//Logic for saving the current game.
 				
-				File savesDirectory = new File("./saves");
-				
-				 if( savesDirectory.list() == null ){
-				 
-				 	savesDirectory.mkdir();
-				 }
-				
-				 Calendar time = Calendar.getInstance();
-				 
-					FileWriter save = null;
-					
-					
-					File file =  new File("./saves/LastGame.checkers" );
-					
-					
-					try {
-						file.createNewFile();
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-					
-					try {
-						save = new FileWriter( file );
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-				 
-				try {
-					save.write( ( (GameScreen) Globals.GAME.getCurrentState() ).toFileString() );
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				try {
-					save.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}break;
-			
-			case LOADGAME: 
-				if(Globals.GAME.getCurrentStateID() == Globals.GAME.TITLESCREENSTATE){
-					
-						
-				}
-				else{
-					//Load game from Game Screen
-					
+				if(haltButtons != 0){
 					File savesDirectory = new File("./saves");
 					
 					 if( savesDirectory.list() == null ){
@@ -197,23 +146,78 @@ public class Menu{
 					 	savesDirectory.mkdir();
 					 }
 					
-					File file =  new File("./saves/LastGame.checkers" );
-
-					if( file.exists() ){
+					 Calendar time = Calendar.getInstance();
+					 
+						FileWriter save = null;
 						
-						Scanner scanner = null;
+						
+						File file =  new File("./saves/LastGame.checkers" );
+						
 						
 						try {
-							scanner = new Scanner( file );
-						} catch (FileNotFoundException e) {
+							file.createNewFile();
+						} catch (IOException e2) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							e2.printStackTrace();
 						}
 						
-						System.out.println( ( (GameScreen) Globals.GAME.getCurrentState() ).setState( scanner.nextLine() ) );
+						try {
+							save = new FileWriter( file );
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+
+					 
+					try {
+						save.write( ( (GameScreen) Globals.GAME.getCurrentState() ).toFileString() );
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 					
+					try {
+						save.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+								
+			}break;
+			
+			case LOADGAME: 
+				if(Globals.GAME.getCurrentStateID() == Globals.GAME.TITLESCREENSTATE){
+					
+				}
+				else{
+					//Load game from Game Screen
+					if(haltButtons != 0){
+						File savesDirectory = new File("./saves");
+						
+						 if( savesDirectory.list() == null ){
+						 
+						 	savesDirectory.mkdir();
+						 }
+						
+						File file =  new File("./saves/LastGame.checkers" );
+
+						if( file.exists() ){
+							
+							Scanner scanner = null;
+							
+							try {
+								scanner = new Scanner( file );
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+							System.out.println( ( (GameScreen) Globals.GAME.getCurrentState() ).setState( scanner.nextLine() ) );
+						}
+						
+					}
+					}
 				break;
 			case STATISTICS: 
 				if(Globals.CURRENTSTATE == Globals.GAME.TITLESCREENSTATE){

@@ -12,11 +12,13 @@ import org.newdawn.slick.gui.TextField;
 
 import com.sadbagel.checkers.backend.CheckerStats;
 
+import com.sadbagel.checkers.backend.CheckerStats;
+
 public class StatGUI {
 	
 	private int activated = 0;
 	private Image title = null;
-	private TextField text = null;
+	private String text = "";
 	
 	public StatGUI(){
 		
@@ -24,13 +26,13 @@ public class StatGUI {
 	
 	public void init(){
 		title = ResourceManager.getImage("titleStatistics");//TODO: V This is what is wrong with the whole idea. I don't know how to get the text box to pop up. Set text's text field to CheckerStats.text() and we're good. 
-		text = new TextField(Globals.GAME.getContainer(), (org.newdawn.slick.Font) new UnicodeFont(new Font("Times New Roman", 20, 20)), 4, 4, 300, 400);
+		text = "";
 	}
 	
 	public void toggle(){
 		activated = (activated + 1) % 2;
 		CheckerStats.refresh();
-		text.setText(CheckerStats.text());
+		text = CheckerStats.text();
 	}
 	
 	public boolean isActivated(){
@@ -48,11 +50,16 @@ public class StatGUI {
 			g.setColor(new Color(0,0,0,200));
 			g.fillRect(0, 0, 800, 600);
 			
-			title.draw(210, 42);
-
-			text.render(container, g);
+			if(title != null){
+				title.draw(210, 42);
+			}
+			else{
+				this.init();
+			}
 			
 			//Draw the statistics to the screeeeen
+			g.setColor(Color.white);
+			g.drawString(text, 200, 200);
 			
 		}
 	}

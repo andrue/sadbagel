@@ -1,7 +1,13 @@
 package com.sadbagel.checkers.gui;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -107,6 +113,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	Integer[][] guiBoard;
 	int winner = 0;
 	Image winnerImage;
+	int saveTurn = -1;
 
 	//Animating Piece Movement
 	ArrayList<GUIMovement> moveList = new ArrayList<GUIMovement>();
@@ -116,7 +123,10 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Player Movement
 	ArrayList<Coordinate> playerOneMove = new ArrayList<Coordinate>();
 	ArrayList<Coordinate> playerTwoMove = new ArrayList<Coordinate>();
-
+	
+	//Loading Question
+	boolean shouldLoad = false;
+	
 	@Override
 	public void init(GameContainer container, StateBasedGame sbg)
 			throws SlickException {
@@ -179,6 +189,11 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				"Are you sure you want to continue and lose?\n\n" +
 				"Just click 'OKAY' to lose and start a new game,\n" +
 				"or click 'CANCEL' if you want to try to win.");
+		
+		quitGameBox = new PromptBox("Warning: When exiting a game, without saving, you will be\n" +
+				"penalized with a loss for quitting.\n\n" +
+				"Would you like to quit and lose?\n" +
+				"Otherwise, please cancel and save, then quit.");
 
 		gameTypeBox = new GameTypePrompt();
 
@@ -187,6 +202,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		surrenderBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
 		newGameBox.okayButton = new MouseOverArea(container, ResourceManager.getImage("okay"), 125, 405, 150, 25, this);
 		newGameBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);
+		quitGameBox.okayButton = new MouseOverArea(container, ResourceManager.getImage("okay"), 125, 405, 150, 25, this);
+		quitGameBox.cancelButton = new MouseOverArea(container, ResourceManager.getImage("cancel"), 525, 405, 150, 25, this);		
 		//End Prompt Boxes
 
 		//GameType Box
@@ -325,9 +342,6 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				y = (8-m.getStart().getY())*64-4;
 				glowForced.draw(x,y);
 			}
-			
-			
-			
 		}
 		
 
@@ -423,6 +437,10 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		stat.render(container, g);
 		if(stat.isActivated()){
 			showStatistics.render(container, g);
+			menu.haltButtons = 0;
+		}
+		else{
+			menu.haltButtons = 1;
 		}
 
 		//Display Winner if any
@@ -433,7 +451,15 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		surrenderBox.render(container, g);
 		newGameBox.render(container, g);
 		gameTypeBox.render(container, g);
-
+		quitGameBox.render(container, g);
+		
+		if(surrenderBox.isActivated() || newGameBox.isActivated() || gameTypeBox.isActivated()
+			|| quitGameBox.isActivated()){
+				menu.haltButtons = 0;
+			}
+			else{
+				menu.haltButtons = 1;
+			}
 	}
 
 	@Override
@@ -443,6 +469,29 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Make Sure AI set correctly
 		if(Globals.playerTwoAI != playerTwoAI)
 			playerTwoAI = Globals.playerTwoAI;
+		
+		//Check if Loading Game
+		if(Globals.loadGame){
+			Globals.loadGame = false;
+			
+			File savesDirectory = new File("./saves");
+			 if( savesDirectory.list() == null ){
+			 	savesDirectory.mkdir();
+			 }
+			
+			File file =  new File("./saves/LastGame.checkers" );
+			if( file.exists() ){
+				Scanner scanner = null;
+				try {
+					scanner = new Scanner( file );
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println( ( (GameScreen) Globals.GAME.getCurrentState() ).setState( scanner.nextLine() ) );
+			}
+		}
+
 
 		//Check if Board is Blank
 		boolean isBlank = true;
@@ -707,12 +756,27 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	public void componentActivated(AbstractComponent source) {
 
 		//Prompt Boxes
+		
 		if(surrenderBox.isActivated()){
 			if(source == surrenderBox.cancelButton){
 				surrenderBox.toggle();
 			}
 			else if(source == surrenderBox.okayButton){
-				//Logic for Surrendering
+				//Record Loss
+				CheckerStats.save(turn-1, true/*yes*/, playerTwoAI, totalTurns);
+				gameOver = true;
+				surrenderBox.toggle();
+				menu.toggle();
+			}
+		}
+		
+		if(quitGameBox.isActivated()){
+			if(source == quitGameBox.cancelButton){
+				quitGameBox.toggle();
+			}
+			else if(source == quitGameBox.okayButton){
+				CheckerStats.save(turn, true/*yes*/, playerTwoAI, totalTurns);
+				menu.shouldExit = true;
 			}
 		}
 
@@ -778,10 +842,13 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 					}
 				}
 				else if (source == menu.areas[Menu.SAVEGAME]){
-					//Logic for Saving Game
+					System.out.println("Save: " + saveTurn + " " + totalTurns);
+					saveTurn = totalTurns;
+					System.out.println("Save: " + saveTurn + " " + totalTurns);
 				}
 				else if (source == menu.areas[Menu.LOADGAME]){
 					//Logic for Loading a Game
+					menu.toggle();
 				}
 				else if(source == menu.areas[Menu.STATISTICS]){
 					//Toggle the Statistics Overlay
@@ -794,7 +861,14 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 						menu.shouldExit = true;
 					}
 					else{
-						//Prompt user about exiting
+						if(saveTurn < totalTurns){
+							quitGameBox.toggle();
+						}
+						else{
+							//Save Statistics
+							//Quit
+							menu.shouldExit = true;
+						}
 					}
 				}
 			}

@@ -18,10 +18,7 @@ import org.newdawn.slick.muffin.FileMuffin;
 
 import com.sadbagel.checkers.gui.GameScreen;
 
-
-
 public class CheckerStats {
-
 
 	private static double compWins = 0, compLosses= 0, compWinRate= 0, compLossRate= 0, compTotalGames= 0, lowestTurns= 0;
 	private static double humWins= 0, humLosses= 0, humWinRate= 0, humLossRate= 0, humTotalGames= 0;
@@ -73,17 +70,12 @@ public class CheckerStats {
 			e.printStackTrace();
 		}
 
-
-
-
-
-
 		{
 			System.out.println(((winner!=1&&!p1human)||(winner!=2&&p2robot))+"Testing the expression. ");
 			String o = "";
 			o+=  ((winner==1&&!p1human)||(winner==2&&p2robot)  ?1.:0.)+compWins+"\n";//CWINS
 			o+=  ((winner!=1&&!p1human)||(winner!=2&&p2robot)  ?1.:0.)+compLosses+"\n";//CLOSS
-			o+= ((p1human==p2robot&&(winner==1&&p1human)||(winner==2&&!p2robot))  ?1.5:0.)+humWins+"\n";//HWINS
+			o+= ((p1human==p2robot&&(winner==1&&p1human)||(winner==2&&!p2robot))  ?1.:0.)+humWins+"\n";//HWINS
 			o+= ((p1human==p2robot&&(winner!=1&&p1human)||(winner!=2&&!p2robot))  ?1.:0.)+humLosses+"\n";//HLOSS
 
 			try {
@@ -133,13 +125,13 @@ public class CheckerStats {
 			e.printStackTrace();
 		}
 		catch (NullPointerException p){
-			System.out.println("I GIVE NULL FUCKS");
+			System.out.println("Null Error with stat system");
 			compWins = 0.;
 			compLosses = 0.;
 			humWins = 0.;
 			humLosses = 0.;
 		} catch (IOException e) {
-			System.out.println("IO NO FUCKS");
+			System.out.println("IO Error");
 			e.printStackTrace();
 		}
 

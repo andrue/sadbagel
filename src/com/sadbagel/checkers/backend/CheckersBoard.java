@@ -935,8 +935,6 @@ public class CheckersBoard
 			}
 		}
 		
-		s += moveNumber;
-		
 		return s;
 	}
 	
