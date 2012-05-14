@@ -11,6 +11,7 @@ public class CheckersBoard
 	private final int MAX_ROWS = 8;
 	private final int MAX_COLUMNS = 8;
 	private GUIMovement lastMove;
+	private static int moveNumber = 1;
 	
 	/**
 	 * 
@@ -720,6 +721,12 @@ public class CheckersBoard
 		System.out.println(AI.playerAI(1));
 		System.out.println(board);
 		
+		
+		System.out.println( board.toFileString());
+		System.out.println( board.setState( "111111111111000000002222222222221a" ));
+		System.out.println( board );
+		System.out.println( moveNumber );
+		
 		// How can i get a checker piece from the board and print out the checker piece enum to make sure it displays 2k?
 	}
 
@@ -857,6 +864,28 @@ public class CheckersBoard
 	}
 	
 	
+	public ArrayList<Move> getMoves( Coordinate current, int player ){
+		
+		if( current == null){
+			
+			return new ArrayList<Move>();
+		}
+		
+		if( player == 1){
+			
+			return playerOneMove( current );
+		}
+		
+		if( player == 2){
+			
+			return playerTwoMove( current );
+		}
+		
+		return null;
+		
+	}
+	
+	
 	public ArrayList<Move> getPossibleMoves( int player ){
 		
 		ArrayList<Move> Moves;
@@ -869,6 +898,114 @@ public class CheckersBoard
 		}
 		
 		return Moves;
+		
+	}
+	
+	public int whosTurn(){
+		
+		return ( (moveNumber + 1) % 2 ) + 1;
+	}
+	
+	public int getMoveNumber(){
+		
+		return moveNumber;
+	}
+	
+	public void incrementMoveNumber(){
+		
+		moveNumber++;
+	}
+	
+	public String toFileString(){
+		
+		String s = "";
+		
+		for( int row = 0 ; row < MAX_ROWS ; row++ )
+		{
+			for( int column = (row + 1) % 2 ; column < MAX_COLUMNS ; column += 2 )
+			{
+				
+				if ( board[ row ][ column ] == null){
+					s += "0";
+				}
+				else{
+					s += board[ row ][ column ].toString();
+				}
+				
+			}
+		}
+		
+		s += moveNumber;
+		
+		return s;
+	}
+	
+	public boolean setState( String state){
+		
+		if( state.length() < 33 ){
+			
+			return false;
+		}
+		
+		
+		for(int i = 0; i < 32; i++){
+			
+			if(  state.charAt( i ) < 48 || state.charAt( i ) > 52){
+				
+				return false;
+			}
+		}
+		
+		
+		for(int i = 32; i < state.length(); i++){
+			
+			if( !Character.isDigit( state.charAt( i ) ) ){
+				
+				return false;
+			}
+		}
+		
+		int count = 0;
+		
+		for( int row = 0 ; row < MAX_ROWS ; row++ )
+		{
+			for( int column = (row + 1) % 2 ; column < MAX_COLUMNS ; column += 2 )
+			{
+				
+				if(  state.charAt( count ) == '0' ){
+					
+					 board[ row ][ column ] = null;
+				}
+				
+				if(  state.charAt( count ) == '1' ){
+					
+					 board[ row ][ column ] = Checker.ONE;
+				}
+				
+				if(  state.charAt( count ) == '2' ){
+					
+					 board[ row ][ column ] = Checker.TWO;
+				}
+				
+				if(  state.charAt( count ) == '3' ){
+					
+					 board[ row ][ column ] = Checker.ONE_KING;
+				}
+				
+				if(  state.charAt( count ) == '4' ){
+					
+					 board[ row ][ column ] = Checker.TWO_KING;
+				}
+				
+				
+				count++;				
+			}
+		}
+		
+		
+		moveNumber = Integer.parseInt( state.substring( 32 ) );
+		
+		return true;
 		
 	}
 	
