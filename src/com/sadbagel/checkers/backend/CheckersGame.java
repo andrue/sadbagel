@@ -1,5 +1,7 @@
 package com.sadbagel.checkers.backend;
 
+
+//TODO: MOTHERSNIFFING DELETE
 import java.util.ArrayList;
 
 public class CheckersGame {
@@ -103,9 +105,19 @@ public class CheckersGame {
 		totalTurns--;
 		
 		System.out.println("WINNER IS: " + turn);
+		endGame();
 		
 	}
 	
+	/**
+	 * endGame
+	 * @param
+	 * Calls some extra end-game wrap up pingas.
+	 */
+	private void endGame()
+	{
+		
+	}
 	
 	public static void main( String[ ] args ){
 		

@@ -2,9 +2,11 @@ package com.sadbagel.checkers.backend;
 
 
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class CheckerStats {
 
 	private static double compWins = 0, compLosses= 0, compWinRate= 0, compLossRate= 0, compTotalGames= 0, lowestTurns= 0;
 	private static double humWins= 0, humLosses= 0, humWinRate= 0, humLossRate= 0, humTotalGames= 0;
-	private static final String fileName = "stats.cx";
+	private static final String fileName = "stats.txt";
 	//private ArrayList<SavedGame> savedGames = new ArrayList<SavedGames>();
 
 	String name;
@@ -52,8 +54,17 @@ public class CheckerStats {
 	public static void save(int winner, boolean p1human, boolean p2robot, int turnCount)
 	{
 		System.out.println("Saving" + p2robot);
-		
+
 		File test = new File(fileName);
+		FileReader fr = null;
+		try {
+			fr = new FileReader(test);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//System.out.println("Permissions: read"+test.canRead()+" write"+test.canWrite());
+		initFromFile(fr);
 		BufferedWriter out = null;
 		try {
 			out = new BufferedWriter(new FileWriter(test));
@@ -61,12 +72,12 @@ public class CheckerStats {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-			initFromFile(test);
 
-		
-		
+
+
+
+
 		{
 			System.out.println(((winner!=1&&!p1human)||(winner!=2&&p2robot))+"Testing the expression. ");
 			String o = "";
@@ -74,7 +85,7 @@ public class CheckerStats {
 			o+=  ((winner!=1&&!p1human)||(winner!=2&&p2robot)  ?1.:0.)+compLosses+"\n";//CLOSS
 			o+= ((p1human==p2robot&&(winner==1&&p1human)||(winner==2&&!p2robot))  ?1.5:0.)+humWins+"\n";//HWINS
 			o+= ((p1human==p2robot&&(winner!=1&&p1human)||(winner!=2&&!p2robot))  ?1.:0.)+humLosses+"\n";//HLOSS
-			
+
 			try {
 				out.write(o);
 				out.flush();
@@ -98,38 +109,40 @@ public class CheckerStats {
 				System.err.println("Tried saving in !test.exists() in CheckerStats to file "+fileName);
 				e.printStackTrace();
 			}
-			*/
+			 */
 		}
 	}
-	
-	public static void initFromFile(File f)
+
+	public static void initFromFile(FileReader fr)
 	{
 		try {
-			System.out.println(f.getCanonicalPath());
-			Scanner scan = new Scanner(f);
-			System.out.println("at least I've opened the scanner"+scan.hasNextDouble());
-			
-			compWins = scan.nextDouble();
-			System.out.println("cw"+compWins);
-			compLosses = scan.nextDouble();
-			System.out.println("cl"+compLosses);
-			humWins = scan.nextDouble();
-			humLosses = scan.nextDouble();
+			//System.out.println(fr.getCanonicalPath());
+
+
+			System.out.println(fr.ready());
+			BufferedReader scan = new BufferedReader(fr);
+			//			System.out.println("at least I've opened the scanner"+scan.ready());
+			compWins = Double.parseDouble(scan.readLine());
+			//	System.out.println("cw"+compWins);
+			compLosses = Double.parseDouble(scan.readLine());
+			//System.out.println("cl"+compLosses);
+			humWins = Double.parseDouble(scan.readLine());
+			humLosses = Double.parseDouble(scan.readLine());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (NoSuchElementException p){
-			System.out.println("I GIVE NO FUCKS");
-			compWins = 0;
-			compLosses = 0;
-			humWins = 0;
-			humLosses = 0;
+		catch (NullPointerException p){
+			System.out.println("I GIVE NULL FUCKS");
+			compWins = 0.;
+			compLosses = 0.;
+			humWins = 0.;
+			humLosses = 0.;
 		} catch (IOException e) {
 			System.out.println("IO NO FUCKS");
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -177,9 +190,25 @@ public class CheckerStats {
 		}
 	}
 
+	public void calcMissingValues()
+	{
+		compTotalGames = compWins + compLosses;
+		compWinRate = compWins / compTotalGames;
+		compLossRate = compLosses / compTotalGames;
+		humTotalGames = humWins + humLosses;
+		humWinRate = humWins / humTotalGames;
+		humLossRate = humLosses / humTotalGames;
+	}
+
 	public String toString(){
 		String result = "";
-
+		try {
+			initFromFile(new FileReader(fileName));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		calcMissingValues();
 		result += "Player: " /*+ this.name*/ + "\n";
 		result += "vs COMPUTER: \n";
 		result += "Games: " + this.compTotalGames + "\n";
