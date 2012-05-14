@@ -32,14 +32,19 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	//Background Image
 	Image background = null;
 	Image infoBox = null;
+	Image optionsMenu = null;
 	
 	//Image variables for game pieces
 	Image redPiece = null;
 	Image redKing = null;
 	Image blackPiece = null;
 	Image blackKing = null;
+	
+	//Board Images
 	Image blackSpace = null;
 	Image whiteSpace = null;
+	Image glowForced = null;
+	Image glowSelection = null;
 	
 	//Variables for tracking current move
 	final int RED = 0;
@@ -99,6 +104,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 	boolean playerTwoAI = true;
 	Integer[][] guiBoard;
 	int winner = 0;
+	Image winnerImage;
 	
 	//Animating Piece Movement
 	ArrayList<GUIMovement> moveList = new ArrayList<GUIMovement>();
@@ -118,16 +124,22 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		}
 		
 		this.container = container;
+		
+		//Setup Images
 		background = ResourceManager.getImage("bg3");
 		infoBox = ResourceManager.getImage("infoBox");
 		redPiece = ResourceManager.getImage("red");
 		redKing = ResourceManager.getImage("redking");
 		blackPiece = ResourceManager.getImage("black");
 		blackKing = ResourceManager.getImage("blackking");
-		whiteSpace = ResourceManager.getImage("whitespace");
-		blackSpace = ResourceManager.getImage("blackspace");		
 		
-		//TODO: optionsImage = ResourceManager.getImage("options");
+		//Board Images
+		whiteSpace = ResourceManager.getImage("whitespace");
+		blackSpace = ResourceManager.getImage("blackspace");
+		glowSelection = ResourceManager.getImage("glowSelection");
+		glowForced = ResourceManager.getImage("glowForced");
+		
+		optionsImage = ResourceManager.getImage("options");
 		
 		//Init Board
 		for(int i=0;i<8;i++)
@@ -243,6 +255,8 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			lastMove = null;
 			pieceMovement = null;
 			
+			winnerImage = null;
+			
 			//Reset Player Movement
 			playerOneMove.clear();
 			playerTwoMove.clear();
@@ -291,6 +305,20 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 				}
 			}
 		}
+		
+		//Highlighting Glow
+		if(playerOneMove.size() == 1){
+			int x, y;
+			x = (boardX + (7-playerOneMove.get(0).getX())*64);
+			y = (boardY + (7-playerOneMove.get(0).getY())*64);
+			glowSelection.draw(x,y);
+		}
+		else if(playerTwoMove.size() == 1){
+			int x, y;
+			x = (boardY + (7-playerOneMove.get(0).getX())*64);
+			y = (boardX + (7-playerOneMove.get(0).getY())*64);
+			glowSelection.draw(x,y);
+		}
 				
 		//TODO: Andy will make pieces able to move/jump using magic
 		//movement.render(arg0, arg2);
@@ -317,15 +345,19 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 		//Options Menu Stuff
 		if(menu.isActivated()){
 			g.setColor(new Color(0,0,0,200));
-			//g.setColor(Color.black);
 			g.fillRect(0, 0, 800, 600);
 			menu.render(container, g);
+			optionsImage.draw(250,50);
 		}
 		options.render(container, g);
 		stat.render(container, g);
 		if(stat.isActivated()){
 			showStatistics.render(container, g);
 		}
+		
+		//Display Winner if any
+		if(winnerImage != null)
+			winnerImage.draw(250, 250);
 		
 		//PromptBoxes
 		surrenderBox.render(container, g);
@@ -483,13 +515,21 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 			if(winner < 1){
 				if(turn%2 == 0){
 					winner = 1;
-					System.out.println("Player 1 was the winner...");
 				}
 				else{
 					winner = 2;
-					System.out.println("Player 2 was the winner...");
-				}				
+				}
+				menu.toggle(); //Show menu because the game has ended
 			}
+			
+			//Show winning screen
+			if(winner == 1){
+				winnerImage = ResourceManager.getImage("p1win");
+			}
+			else{
+				winnerImage = ResourceManager.getImage("p2win");
+			}
+			
 			
 		}
 	}
@@ -657,7 +697,7 @@ public class GameScreen extends BasicGameState implements ComponentListener{
 						newGameBox.toggle();
 					}
 					else{
-						reset();
+						gameTypeBox.toggle();
 					}
 				}
 				else if (source == menu.areas[Menu.SAVEGAME]){

@@ -27,13 +27,18 @@
 	
 	<image key="banner" file="images/blackbanner.png"/>
 	<image key="infoBox" file="images/infoBox.png"/>
+	<image key="options" file="images/options.png"/>
 	
 	<image key="red" file="images/r1.png"/>
 	<image key="redking" file="images/rk.png"/>
 	<image key="black" file="images/b1.png"/>
 	<image key="blackking" file="images/bk.png"/>
+	
+	<!-- Board Images -->
 	<image key="whitespace" file="images/whitespace.png"/>
 	<image key="blackspace" file="images/blackspace.png"/>
+	<image key="glowForced" file="images/forceGlow.png"/>
+	<image key="glowSelection" file="images/selectionGlow.png"/>
 
 	<!--  Buttons -->
 	<image key="startgame" file="images/buttons/startgame.png"/>
@@ -51,7 +56,9 @@
 	<image key="1player" file="images/prompt/1player.png"/>
 	<image key="2player" file="images/prompt/2player.png"/>
 	
-	
+	<!--  Winner -->
+	<image key="p1win" file="images/p1wins.png"/>
+	<image key="p2win" file="images/p2wins.png"/>
 
 	<!-- sheets 
 	<sheet key="player" file="images/player.png" width="32" height="32" /> 
