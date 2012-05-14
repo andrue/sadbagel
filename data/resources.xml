@@ -26,6 +26,7 @@
 	<image key="menu" file="images/bk.png"/>
 	
 	<image key="banner" file="images/blackbanner.png"/>
+	<image key="infoBox" file="images/infoBox.png"/>
 	
 	<image key="red" file="images/r1.png"/>
 	<image key="redking" file="images/rk.png"/>
@@ -45,9 +46,11 @@
 	<image key="surrender" file="images/buttons/surrender.png"/>
 	
 	<!-- Prompt Box -->
-	<image key="warning" file="images/prompt/warning.png"/>
 	<image key="okay" file="images/prompt/okay.png"/>
 	<image key="cancel" file="images/prompt/cancel.png"/>
+	<image key="1player" file="images/prompt/1player.png"/>
+	<image key="2player" file="images/prompt/2player.png"/>
+	
 	
 
 	<!-- sheets 

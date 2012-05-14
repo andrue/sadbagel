@@ -35,6 +35,10 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	//Menu
 	Menu menu = null;
 	
+	//GameTypeBox
+	//GameType Box
+	GameTypePrompt gameTypeBox;
+	
 	private GameContainer container;
 	
 	@Override
@@ -45,10 +49,15 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 		if(!Globals.RESOURCES_INITIATED){
 			Checkers.initRessources();
 		}
+
+		//GameType Box
+		gameTypeBox = new GameTypePrompt();
+		gameTypeBox.pvaiButton = new MouseOverArea(container, ResourceManager.getImage("1player"), 125, 405, 150, 25, this);
+		gameTypeBox.pvpButton = new MouseOverArea(container, ResourceManager.getImage("2player"), 290, 405, 150, 25, this);
 		
+		//Setup Menu
 		menu = new Menu(265,320, 5);
 				
-		//Setup Menu
 		this.container = container;//Ryan: changed menus.areas[i] = bleh --> menus.setArea(i, object) so that we can add listeners
 		for (int i=0;i<5;i++) {
 			if( i == Menu.NEWGAME){
@@ -133,7 +142,8 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 			title.draw(50, 100);
 		}
 		
-		menu.render(container, g);		
+		menu.render(container, g);
+		gameTypeBox.render(container, g);
 	}
 
 	@Override
@@ -155,11 +165,27 @@ public class TitleScreen extends BasicGameState implements ComponentListener{
 	public void componentActivated(AbstractComponent source) {
 		//Handles the Mouse Interactions
 		//TODO: Add logic to check for overlays
-		if(source == menu.areas[Menu.NEWGAME]){
-			Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
+		
+		if(gameTypeBox.isActivated()){
+			if(source == gameTypeBox.pvaiButton){
+				Globals.playerTwoAI = true;
+				System.out.println("player two aiTS: " + Globals.playerTwoAI);
+				Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
+			}
+			else if(source == gameTypeBox.pvpButton){
+				Globals.playerTwoAI = false;
+				System.out.println("player two aiTS: " + Globals.playerTwoAI);
+				Globals.GAME.enterState(Globals.GAME.GAMESCREENSTATE, new FadeOutTransition(), new FadeInTransition());
+			}
 		}
-		else if(source == menu.areas[Menu.QUITGAME]){
-			menu.shouldExit = true;
+		else{
+			if(source == menu.areas[Menu.NEWGAME]){
+				//Show GameTypeBox
+				gameTypeBox.toggle();
+			}
+			else if(source == menu.areas[Menu.QUITGAME]){
+				menu.shouldExit = true;
+			}			
 		}
 	}
 	

@@ -4,6 +4,10 @@ public class Globals {
 	public static boolean	RESOURCES_INITIATED	= false;
 	public static boolean	restartGame			= false;
 	public static boolean	paused			= false;
-	public static Checkers GAME = null;//This is something I'm going to hell for.
+	public static Checkers GAME = null;
 	public static int CURRENTSTATE;
+	
+	public static boolean playerTwoAI = true;
+	public static boolean loadGame = false;
+	
 }

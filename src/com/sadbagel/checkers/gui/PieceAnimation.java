@@ -69,10 +69,10 @@ public class PieceAnimation {
 //		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 9);
 //		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 9);
 		
-		x = (60 + (7 - move.getMove().getStart().getX())*64 + 6);
-		y = (60 + (7 - move.getMove().getStart().getY())*64 + 6);
-		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 6);
-		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 6);
+		x = (60 + (7 - move.getMove().getStart().getX())*64 + 8);
+		y = (60 + (7 - move.getMove().getStart().getY())*64 + 8);
+		endX = (60 + (7 - move.getMove().getEnd().getX())*64 + 8);
+		endY = (60 + (7 - move.getMove().getEnd().getY())*64 + 8);
 		
 		//Determine Direction
 		if(x > endX){
@@ -97,8 +97,8 @@ public class PieceAnimation {
 		}
 		
 		if(move.getJumpee() != 0){
-			jX = (60 + (7 - move.getCoordinate().getX())*64 + 9);
-			jY = (60 + (7 - move.getCoordinate().getY())*64 + 9);
+			jX = (60 + (7 - move.getCoordinate().getX())*64 + 8);
+			jY = (60 + (7 - move.getCoordinate().getY())*64 + 8);
 		}
 		
 	}
